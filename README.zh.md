@@ -5,9 +5,9 @@
 **北方森林里一座能走进去的原木小屋，在浏览器里打开就能看。**
 主人有一天出门，再也没回来。炉子还温着，水壶还在炉上，屋里每一件东西都有自己的故事。
 
-[**▶ 在浏览器里打开**](https://fxrcred.github.io/log-cabin/) · [English](README.md) · three.js · 无需构建 · 代码 MIT
+[**▶ 在浏览器里打开**](https://fxrcred.github.io/surveyors-cabin/) · [English](README.md) · three.js · 无需构建 · 代码 MIT
 
-<a href="https://fxrcred.github.io/log-cabin/"><img src="docs/hero.jpg" width="820" alt="针叶林中的原木小屋，木瓦屋顶，烟囱冒着烟"></a>
+<a href="https://fxrcred.github.io/surveyors-cabin/"><img src="docs/hero.jpg" width="820" alt="针叶林中的原木小屋，木瓦屋顶，烟囱冒着烟"></a>
 
 </div>
 
@@ -48,8 +48,8 @@
 任何静态文件服务器都行，用 Python：
 
 ```
-git clone https://github.com/FxrcRed/log-cabin.git
-cd log-cabin
+git clone https://github.com/FxrcRed/surveyors-cabin.git
+cd surveyors-cabin
 python -m http.server 8765
 ```
 

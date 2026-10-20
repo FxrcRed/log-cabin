@@ -5,9 +5,9 @@
 **A log cabin in a northern forest that you can walk into, in your browser.**
 The owner left one day and never came back. The stove is still warm, the kettle is on, and every object in the house has a story to tell.
 
-[**▶ Open it in your browser**](https://fxrcred.github.io/log-cabin/) · [中文说明](README.zh.md) · three.js · no build step · code MIT
+[**▶ Open it in your browser**](https://fxrcred.github.io/surveyors-cabin/) · [中文说明](README.zh.md) · three.js · no build step · code MIT
 
-<a href="https://fxrcred.github.io/log-cabin/"><img src="docs/hero.jpg" width="820" alt="A log cabin with a shingle roof and smoking chimney, surrounded by pine forest"></a>
+<a href="https://fxrcred.github.io/surveyors-cabin/"><img src="docs/hero.jpg" width="820" alt="A log cabin with a shingle roof and smoking chimney, surrounded by pine forest"></a>
 
 </div>
 
@@ -48,8 +48,8 @@ Works on desktop and phones (touch to orbit, fewer particles and trees on mobile
 Any static file server works. With Python:
 
 ```
-git clone https://github.com/FxrcRed/log-cabin.git
-cd log-cabin
+git clone https://github.com/FxrcRed/surveyors-cabin.git
+cd surveyors-cabin
 python -m http.server 8765
 ```
 

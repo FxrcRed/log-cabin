@@ -1883,7 +1883,7 @@ const PEOPLE = [
   // 打开页面随机二选一：阁楼摇椅上看书（Sitting_Read_Loop + Book），或书桌前写笔记（Sitting_Write_Loop + Notebook、Pen）；这两个动作是 Blender 里用 IK 在坐姿上摆的。
   // 她的坐姿骨盆在脚后 0.324、坐面比根节点高 0.444（未缩放，男的是 0.34 / 0.468）。调试：网址带 ?woman=read / ?woman=desk 固定一种。
   { id: 'person_woman', url: 'characters/woman.glb', scale: 0.896, mode: 'sit', sitBack: 0.324, sitUp: 0.49,
-    pick: () => (/[?&]woman=desk/.test(location.search) ? false : /[?&]woman=read/.test(location.search) || Math.random() < 0.5) ? { seat: 'loft_rocking_chair', idle: 'Sitting_Read_Loop', props: ['Book'], area: 'Loft', desc: 'Reading the Surveyor\'s papers in the rocking chair.' }
+    pick: () => (/[?&]woman=desk/.test(location.search) ? false : /[?&]woman=read/.test(location.search) || Math.random() < 0.5) ? { seat: 'loft_rocking_chair', idle: 'Sitting_Read_Loop', props: ['Book', 'Cushion'], area: 'Loft', desc: 'Reading the Surveyor\'s papers in the rocking chair.' }
       : { seat: 'loft_chair', idle: 'Sitting_Write_Loop', props: ['Notebook', 'Pen'], area: 'Parlour', desc: 'Copying out his bearings at the desk.' } },
 ];
 const MOODS = {
@@ -1901,7 +1901,9 @@ async function loadPeople() {
     root.scale.setScalar(P.scale || 1);
     if (P.pos) { root.position.set(...P.pos); root.rotation.y = P.yaw; }
     else { const a = seatPose({ root, sitBack: P.sitBack, sitUp: P.sitUp }, P.seat); root.position.set(a.x, a.y, a.z); root.rotation.y = SEATS[P.seat].yaw; }
-    for (const n of ['Book', 'Notebook', 'Pen']) { const o = gltf.scene.getObjectByName(n); if (o) o.visible = !!pk && pk.props.includes(n); } // 道具：看书只露书，写字只露本子和笔
+    for (const n of ['Book', 'Cushion', 'Notebook', 'Pen']) { const o = gltf.scene.getObjectByName(n); if (o) o.visible = !!pk && pk.props.includes(n); } // 道具：看书露书和背后靠垫，写字只露本子和笔
+    const cushion = gltf.scene.getObjectByName('Cushion'); // 靠垫用摇椅座垫同一块红亚麻布
+    if (cushion) layers.get('loft_rocking_chair')?.traverse((o) => { if (o.isMesh && o.material?.name === 'loft_mattress_linen_red') cushion.material = o.material; });
     gltf.scene.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; o.frustumCulled = false; } }); // 蒙皮网格包围球不跟动作，别被裁掉
     // 点选用隐形胶囊：蒙皮网格逐面射线慢，而且包围球是静止姿势的
     const hit = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 1, 2, 8), new THREE.MeshBasicMaterial({ visible: false }));
@@ -1944,7 +1946,7 @@ async function loadHand(man) { // 第一人称拿东西的右手（../blender/sc
 const SEATS = {
   living_sofa: { pelvis: [0.19, 0.39], y: 0.736, yaw: Math.PI, node: 'sofa' }, // 长沙发右坐垫（老人的老位置）；坐面实测 0.69，软垫坐下去陷 4.6cm，按 0.736 算正好是原来手调的根节点 0.25
   loft_chair: { pelvis: [-0.894, -1.124], y: 0.70, yaw: -Math.PI / 2, pull: [0.4, 0], out: [-0.83, -0.62], node: 'desk' }, // 书桌椅（名字带 loft，其实在一楼起居室西北角），面朝西边的书桌
-  loft_rocking_chair: { pelvis: [-0.723, 1.148], y: 2.70, yaw: Math.atan2(0.733, -0.68), rock: true }, // 阁楼摇椅，顺着摇杆朝东南；骨盆比坐面中心往椅背挪 10cm（原来坐在前沿、背离椅背一大截，用户截图指出）
+  loft_rocking_chair: { pelvis: [-0.686, 1.114], y: 2.70, yaw: Math.atan2(0.733, -0.68), rock: true }, // 阁楼摇椅，顺着摇杆朝东南；骨盆比坐面中心往椅背挪 5cm（原先挪 10cm 时膝盖窝在座面前沿后面，小腿必穿前横档；背后空隙由女调查员的靠垫 Cushion 填）
   entry_toilet: { pelvis: [-1.43, 1.259], y: 0.58, yaw: Math.PI / 2, node: 'wc' }, // 卫生间马桶，面朝东边的门
 };
 function seatPose(p, name, k = 0) { // 坐在这个座位上时根节点的位置（k = 椅子拉出来的程度）

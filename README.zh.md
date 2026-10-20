@@ -28,7 +28,8 @@
 
 **屋里还有人**
 - 长沙发上坐着一位老人，点他一下，他会站起来在屋里走动。
-- 选「Take His Place」换成第一人称自己走（WASD 走动、Shift 快走），可以爬梯子上阁楼，把墙上的锅和刀拿下来翻着看（E 拿、按住右键转）。
+- 还有一位女书记员，在阁楼摇椅上看书，或在书桌前写字；隔一阵会起来东看看西看看，自己把梯子推过来、爬上爬下、抬起阁楼口的拦杆。
+- 选「Take His Place」或「Take Her Place」换成第一人称自己走（WASD 走动、Shift 快走），可以爬梯子上阁楼，把墙上的锅和刀拿下来翻着看（E 拿、按住右键转）。
 
 <table>
 <tr>
@@ -59,6 +60,7 @@ python -m http.server 8765
 
 - **小屋**在 Rhino 里建模，家具按真实尺寸（屋内约 3.5 × 3.5 米，一层加一个阁楼），用 Draco 压缩导出成 `cabin.glb`。网页按 Rhino 图层名分组，靠这个认出哪个是门、哪个是灯、哪个是盖子。
 - **老人**用的是 Quaternius 的基础人物，在 Blender 里配衣服（用身体网格做）和动作，导出成 `characters/man.glb`。
+- **女书记员**穿的是 Quaternius 的服装。看书、写字、爬梯子的姿势是在 Blender 里用脚本按真实家具和梯子尺寸用 IK 摆的，导出成 `characters/woman.glb`。
 - **其余全是代码**，都在一个 `index.html` 里（three.js r169，ES 模块，不打包）：天空和太阳、雨雪粒子、积雪和水洼着色器、烟、水、火、镜头飞行和第一人称操控。碰撞和点选用 [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh)。
 - **故事**先用中文写成，再译成老式英文，每件能点的东西都有一段。
 
@@ -69,7 +71,7 @@ python -m http.server 8765
 | | 来源 | 许可 |
 |---|---|---|
 | 树 | [Quaternius](https://quaternius.com/)，从 [poly.pizza](https://poly.pizza/) 下载 | CC0 |
-| 人物和动作 | Quaternius *Universal Base Characters*、*Universal Animation Library* | CC0 |
+| 人物和动作 | Quaternius *Universal Base Characters*、*Modular Character Outfits – Fantasy*、*Universal Animation Library* 1 和 2 | CC0 |
 | 英文字体 | IM Fell English（Igino Marini） | SIL OFL 1.1 |
 | 中文字体 | [汇文明朝体 改进版](https://github.com/bosswnx/huiwenmincho-improved)（子集） | CC0 |
 | 库 | [three.js](https://threejs.org/)、[three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh)、[Draco](https://github.com/google/draco) | MIT、MIT、Apache 2.0 |

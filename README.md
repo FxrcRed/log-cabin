@@ -28,7 +28,8 @@ The owner left one day and never came back. The stove is still warm, the kettle 
 
 **Someone is still here.**
 - An old man sits on the settee. Click him and he gets up and potters around the cabin.
-- Choose *Take His Place* to walk in first person (WASD, Shift to hurry). Climb the ladder to the loft, and take the pans and knives down from the wall to turn them over in your hands (E to take, right mouse to rotate).
+- A woman clerk reads in the loft rocking chair or writes at the desk. Every so often she gets up to look about, slides the ladder over, climbs it, and lifts the loft bar herself.
+- Choose *Take His Place* or *Take Her Place* to walk in first person (WASD, Shift to hurry). Climb the ladder to the loft, and take the pans and knives down from the wall to turn them over in your hands (E to take, right mouse to rotate).
 
 <table>
 <tr>
@@ -59,6 +60,7 @@ Then open http://127.0.0.1:8765/. Opening `index.html` directly from disk won't 
 
 - **The cabin** was modelled in Rhino with real furniture dimensions (about 3.5 × 3.5 m inside, one storey plus a loft) and exported to `cabin.glb` with Draco compression. The page groups meshes by Rhino layer name, which is how it knows which part is a door, a lamp or a lid.
 - **The old man** is a Quaternius base character, dressed and animated in Blender (the clothes are built from the body mesh) and exported to `characters/man.glb`.
+- **The clerk** wears a Quaternius outfit. Her reading, writing and ladder-climbing poses were set by script in Blender with IK, measured against the real furniture and ladder, and exported to `characters/woman.glb`.
 - **Everything else is code** in a single `index.html` (three.js r169, ES modules, no bundler): the sky and sun, weather particles, the snow and puddle shaders, smoke, water, fire, the camera flights and the first-person controls. Collision and picking use [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh).
 - **The story** was written in Chinese and translated into period English. Every clickable object has its own entry.
 
@@ -69,7 +71,7 @@ Built by vibe coding with Claude.
 | | Source | License |
 |---|---|---|
 | Trees | [Quaternius](https://quaternius.com/), via [poly.pizza](https://poly.pizza/) | CC0 |
-| Character and animations | Quaternius *Universal Base Characters* and *Universal Animation Library* | CC0 |
+| Characters and animations | Quaternius *Universal Base Characters*, *Modular Character Outfits – Fantasy*, *Universal Animation Library* 1 and 2 | CC0 |
 | English font | IM Fell English by Igino Marini | SIL OFL 1.1 |
 | Chinese font | [Huiwen Mincho Improved](https://github.com/bosswnx/huiwenmincho-improved) (subset) | CC0 |
 | Libraries | [three.js](https://threejs.org/), [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh), [Draco](https://github.com/google/draco) | MIT, MIT, Apache 2.0 |

@@ -1882,7 +1882,7 @@ const PEOPLE = [
   // 女调查员：Rhino 模型里的 Female_Peasant（服装 + 女性基础人物的头 + Hair_Buns 盘发），Rhino 里 1.60m、scale 0.896。
   // 打开页面随机二选一：阁楼摇椅上看书（Sitting_Read_Loop + Book），或书桌前写笔记（Sitting_Write_Loop + Notebook、Pen）；这两个动作是 Blender 里用 IK 在坐姿上摆的。
   // 她的坐姿骨盆在脚后 0.324、坐面比根节点高 0.444（未缩放，男的是 0.34 / 0.468）。调试：网址带 ?woman=read / ?woman=desk 固定一种。
-  { id: 'person_woman', url: 'characters/woman.glb', scale: 0.896, mode: 'sit', sitBack: 0.324, sitUp: 0.444,
+  { id: 'person_woman', url: 'characters/woman.glb', scale: 0.896, mode: 'sit', sitBack: 0.324, sitUp: 0.49,
     pick: () => (/[?&]woman=desk/.test(location.search) ? false : /[?&]woman=read/.test(location.search) || Math.random() < 0.5) ? { seat: 'loft_rocking_chair', idle: 'Sitting_Read_Loop', props: ['Book'], area: 'Loft', desc: 'Reading the Surveyor\'s papers in the rocking chair.' }
       : { seat: 'loft_chair', idle: 'Sitting_Write_Loop', props: ['Notebook', 'Pen'], area: 'Parlour', desc: 'Copying out his bearings at the desk.' } },
 ];
@@ -1910,7 +1910,7 @@ async function loadPeople() {
     for (const c of gltf.animations) acts[c.name] = mixer.clipAction(c);
     for (const n of ['Sitting_Enter', 'Sitting_Exit', 'Interact', 'PickUp_Table']) if (acts[n]) { acts[n].setLoop(THREE.LoopOnce); acts[n].clampWhenFinished = true; }
     const p = { root, mixer, acts, cur: null, mode: P.mode, next: 4 + Math.random() * 8, hit, head, tasks: [], sitY: root.position.y, standY: P.standY ?? root.position.y, seat: P.seat || null, roam: 70 + Math.random() * 90,
-      sitBack: P.sitBack ?? 0.34, sitUp: P.sitUp ?? 0.468, moods: pk ? { sit: { ...MOODS.sit, idle: pk.idle, extra: [] } } : null };
+      sitBack: P.sitBack ?? 0.34, sitUp: P.sitUp ?? 0.517, moods: pk ? { sit: { ...MOODS.sit, idle: pk.idle, extra: [] } } : null };
     p.play = (name, fade = 0.5) => {
       const a = acts[name]; if (!a || a === p.cur) return;
       a.reset().setEffectiveWeight(1).play(); a.timeScale = 1;
@@ -1938,18 +1938,18 @@ async function loadHand(man) { // 第一人称拿东西的右手（../blender/sc
   g.visible = false; scene.add(g); hand = g;
 }
 // —— 座位（2026-10-20）：人物和第一人称玩家都能坐。pelvis = 坐下时骨盆的位置（坐面中心略靠后，无头浏览器从上往下打射线量的坐面），y = 坐面高，yaw = 坐下后面朝的方向；
-// 坐姿（glb）：骨盆在脚后 0.34m、比根节点高 0.468m（×scale；沙发坐面 0.69 → 根节点 0.25，和原来手调的一致）。
+// 坐姿（glb）：骨盆在脚后 0.34m；sitUp = 坐面比根节点高多少（×scale）。2026-10-20 量过：屁股最低点只比骨盆骨骼低 7cm（男）/ 6.4cm（女），原来按 0.468 算硬座上悬空 3cm，现在男 0.517、女 0.49（压进坐面约 1cm）。
 // pull：书桌椅要先往外拉开人才站得进去（不拉的话站的位置插进桌子），坐下后连人带椅推回去，起身时再拉开、往旁边让一步、推回。out = 拉椅子 / 起身后让开时站的地方。
 // rock：摇椅，坐着时一直轻轻摇，人跟着椅子的变换一起动。
 const SEATS = {
-  living_sofa: { pelvis: [0.19, 0.39], y: 0.69, yaw: Math.PI, node: 'sofa' }, // 长沙发右坐垫（老人的老位置）
+  living_sofa: { pelvis: [0.19, 0.39], y: 0.736, yaw: Math.PI, node: 'sofa' }, // 长沙发右坐垫（老人的老位置）；坐面实测 0.69，软垫坐下去陷 4.6cm，按 0.736 算正好是原来手调的根节点 0.25
   loft_chair: { pelvis: [-0.894, -1.124], y: 0.70, yaw: -Math.PI / 2, pull: [0.4, 0], out: [-0.83, -0.62], node: 'desk' }, // 书桌椅（名字带 loft，其实在一楼起居室西北角），面朝西边的书桌
-  loft_rocking_chair: { pelvis: [-0.65, 1.08], y: 2.70, yaw: Math.atan2(0.733, -0.68), rock: true }, // 阁楼摇椅，顺着摇杆朝东南
+  loft_rocking_chair: { pelvis: [-0.723, 1.148], y: 2.70, yaw: Math.atan2(0.733, -0.68), rock: true }, // 阁楼摇椅，顺着摇杆朝东南；骨盆比坐面中心往椅背挪 10cm（原来坐在前沿、背离椅背一大截，用户截图指出）
   entry_toilet: { pelvis: [-1.43, 1.259], y: 0.58, yaw: Math.PI / 2, node: 'wc' }, // 卫生间马桶，面朝东边的门
 };
 function seatPose(p, name, k = 0) { // 坐在这个座位上时根节点的位置（k = 椅子拉出来的程度）
   const S = SEATS[name], s = p.root.scale.x, pl = S.pull || [0, 0], bk = (p.sitBack ?? 0.34) * s;
-  return { x: S.pelvis[0] + pl[0] * k + Math.sin(S.yaw) * bk, z: S.pelvis[1] + pl[1] * k + Math.cos(S.yaw) * bk, y: S.y - (p.sitUp ?? 0.468) * s };
+  return { x: S.pelvis[0] + pl[0] * k + Math.sin(S.yaw) * bk, z: S.pelvis[1] + pl[1] * k + Math.cos(S.yaw) * bk, y: S.y - (p.sitUp ?? 0.517) * s };
 }
 const seatTaken = (name, me) => [...people.values()].some((q) => q !== me && q.seat === name);
 // 一楼的走路路线：节点 + 连通边，BFS 找最短的节点序列（屋里家具多，直线会穿过茶几、沙发、隔墙）。坐标 x 东、z 南。

@@ -1,4 +1,4 @@
-MIT License
+MIT License (code only)
 
 Copyright (c) 2026 Fxrc
 
@@ -19,6 +19,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+This license covers the source code in index.html only.
+
+The cabin model (cabin.glb), the story text (the STORY / STORY_ZH tables and
+the Journal in index.html) and the images in docs/ are Copyright (c) 2026 Fxrc,
+all rights reserved. They may not be copied, redistributed or reused without
+permission.
 
 Third-party assets in trees/, characters/, fonts/ and vendor/ keep their own
 licenses; see README.md.

@@ -5,7 +5,7 @@
 **A log cabin in a northern forest that you can walk into, in your browser.**
 The owner left one day and never came back. The stove is still warm, the kettle is on, and every object in the house has a story to tell.
 
-[**▶ Open it in your browser**](https://fxrcred.github.io/log-cabin/) · [中文说明](README.zh.md) · three.js · no build step · MIT
+[**▶ Open it in your browser**](https://fxrcred.github.io/log-cabin/) · [中文说明](README.zh.md) · three.js · no build step · code MIT
 
 <a href="https://fxrcred.github.io/log-cabin/"><img src="docs/hero.jpg" width="820" alt="A log cabin with a shingle roof and smoking chimney, surrounded by pine forest"></a>
 
@@ -74,4 +74,4 @@ Built by vibe coding with Claude.
 | Chinese font | [Huiwen Mincho Improved](https://github.com/bosswnx/huiwenmincho-improved) (subset) | CC0 |
 | Libraries | [three.js](https://threejs.org/), [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh), [Draco](https://github.com/google/draco) | MIT, MIT, Apache 2.0 |
 
-The rest (code, cabin model, story) is © Fxrc under the [MIT License](LICENSE).
+The code is under the [MIT License](LICENSE). The cabin model, the story and the screenshots are © Fxrc, all rights reserved; please ask before reusing them.

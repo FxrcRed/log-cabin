@@ -5,7 +5,7 @@
 **北方森林里一座能走进去的原木小屋，在浏览器里打开就能看。**
 主人有一天出门，再也没回来。炉子还温着，水壶还在炉上，屋里每一件东西都有自己的故事。
 
-[**▶ 在浏览器里打开**](https://fxrcred.github.io/log-cabin/) · [English](README.md) · three.js · 无需构建 · MIT
+[**▶ 在浏览器里打开**](https://fxrcred.github.io/log-cabin/) · [English](README.md) · three.js · 无需构建 · 代码 MIT
 
 <a href="https://fxrcred.github.io/log-cabin/"><img src="docs/hero.jpg" width="820" alt="针叶林中的原木小屋，木瓦屋顶，烟囱冒着烟"></a>
 
@@ -74,4 +74,4 @@ python -m http.server 8765
 | 中文字体 | [汇文明朝体 改进版](https://github.com/bosswnx/huiwenmincho-improved)（子集） | CC0 |
 | 库 | [three.js](https://threejs.org/)、[three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh)、[Draco](https://github.com/google/draco) | MIT、MIT、Apache 2.0 |
 
-其余部分（代码、小屋模型、故事）© Fxrc，按 [MIT 许可](LICENSE) 开放。
+代码按 [MIT 许可](LICENSE) 开放。小屋模型、故事和截图 © Fxrc，保留所有权利，转载或使用请先联系。

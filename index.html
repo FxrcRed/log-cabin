@@ -80,8 +80,9 @@
   #fpHud .help { position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%); padding: 6px 12px; border-radius: 6px; background: rgba(43,38,32,.6); color: #f4efe6; font-size: 12.5px; text-align: center; white-space: nowrap; transition: opacity .6s; }
   #fpHud .help .zh { display: block; margin-top: 2px; font-size: 12px; opacity: .9; }
   #fpHud.live .help { opacity: 0; }
-  #fpHud .hint { position: absolute; left: 50%; top: calc(50% + 22px); transform: translateX(-50%); font-size: 12px; color: #f4efe6; text-shadow: 0 1px 2px rgba(0,0,0,.7); white-space: nowrap; }
+  #fpHud .hint { position: absolute; left: 50%; top: calc(50% + 48px); transform: translateX(-50%); font-size: 12px; color: #f4efe6; text-shadow: 0 1px 2px rgba(0,0,0,.7); white-space: nowrap; }
   #fpHud:not(.live) .dot { opacity: 0; }
+  #fpHud .hint .key { display: inline-block; min-width: 1.4em; padding: 0 .35em; margin-right: .15em; border: 1px solid rgba(244,239,230,.7); border-radius: 4px; text-align: center; font-weight: normal; }
   #card button { font: inherit; font-size: 12px; color: inherit; text-shadow: inherit; background: none; box-shadow: none; border: 1px solid rgba(244,239,230,.45); border-radius: 6px; padding: 5px 10px; }
   #card button:hover { background: rgba(255,255,255,.12); }
   #card .x { position: absolute; top: 6px; right: 0; padding: 0 6px; border: 0; font-size: 18px; opacity: .8; }
@@ -116,7 +117,9 @@
   #skyPanel select { flex: 1; }
   #skyPanel select option { color: var(--ink); text-shadow: none; }
   /* 天气：按钮和时间按钮并排，面板同款往上展开 */
-  #sky .btns { display: flex; gap: 18px; }
+  #sky .btns { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; }
+  #sky .btns button { white-space: nowrap; } #skyBtn { justify-self: end; } #jBtn { justify-self: start; }
+  #skyClock { display: inline-block; text-align: right; font-variant-numeric: tabular-nums; }
   #sky #wxBtn { border: 0; font-size: 15px; letter-spacing: 1px; }
   #wxPanel { width: min(320px, calc(100vw - 32px)); display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
   #wxPanel[hidden] { display: none; }
@@ -199,6 +202,12 @@
   <p>The porch lamp is still burning, lighting a way home.</p>
   <p>Not his. Yours.</p>
 
+  <h3>The Two Who Came After</h3>
+  <p>For thirty years the reports came down from the north, one each spring, and were filed away unread. Then one spring none came.</p>
+  <p>The Survey Office sent two people up the pebbled path: an old inspector who had signed the Surveyor's commission thirty years before, and a young clerk who had read every report he ever sent, though no one had asked her to.</p>
+  <p>They found the door open and the porch lamp burning. They have not yet decided whether to go on into the fog.</p>
+  <p>He keeps the stove going, and sits in the hollow of the settee, which fits him better than he would like. She reads the Surveyor's papers in the rocking chair, or copies out his bearings at the desk — the last of them pointing to the ✕.</p>
+
   <h3>Afterword</h3>
   <p class="coda">— If you were to walk down that pebbled path into the fog, and on to the end of the fog, you would find the path has no end at all. It only fades away, quietly, beside the roots of a certain spruce. The earth beneath the roots is gently heaved, as though something were growing underneath.</p>
   <p class="coda">You stand there a while, and something feels wrong: the compass is turning, and the pine needles are scorching.</p>
@@ -254,6 +263,12 @@
   <p><em class="k">他已经在那片雾里，变成了针叶林的一部分。</em></p>
   <p>门廊灯还亮着，照亮一条回家的路。</p>
   <p>不是照亮他的。是照亮你的。</p>
+
+  <h3>后来的两个人</h3>
+  <p>三十年来，北边每年开春寄回一份报告，归了档，没人读。直到有一年春天，报告没有来。</p>
+  <p>测绘局派了两个人沿卵石小路上山：一个是三十年前在他委任状上签字的老稽查，一个是年轻的书记员——他寄回的每一份报告她都读过，虽然没人让她读。</p>
+  <p>他们到的时候，大门开着，门廊的灯亮着。要不要接着往雾里走，他们还没想好。</p>
+  <p>老稽查守着炉火，坐在长沙发那个凹陷里，坐着比他愿意承认的还要合身。书记员在摇椅上读测绘员的遗稿，或者在书桌前抄他的方位记录——最后一条，指向那个 ✕。</p>
 
   <h3>后记</h3>
   <p class="coda">——如果你沿着那条卵石小路走进雾里，一直走到雾的尽头，你会发现小路并没有终点。它只是在某棵云杉的树根旁安静地消失了。树根下的泥土微微隆起，像有什么东西在下面生长。</p>
@@ -552,6 +567,15 @@ function setWeather(n, now) {
   wxTimer = setTimeout(() => { const o = WEATHERS.filter((w) => w[0] !== wx.name); setWeather(o[Math.floor(Math.random() * o.length)][0]); }, (120 + Math.random() * 120) * 1000);
 }
 setWeather(WEATHERS[Math.floor(Math.random() * WEATHERS.length)][0], true);
+// 底部三个按钮：天气在正中，时间、Journal 分在两边、离它一样远（CSS grid 1fr auto 1fr）；时钟按最宽的数字定宽、右对齐，
+// 每分钟跳字时什么都不动；只有时段名、天气名变的那一下整排挪一次（原来按最长文字给每个按钮留宽，Snow 后面空一大截，看着不居中）
+function fixClockWidth() {
+  const c = skyEl.clock, keep = c.textContent; let w = 0;
+  c.style.minWidth = '';
+  for (let d = 0; d < 10; d++) { c.textContent = `${d}${d}:${d}${d}`; w = Math.max(w, c.getBoundingClientRect().width); }
+  c.textContent = keep; if (w) c.style.minWidth = Math.ceil(w) + 'px';
+}
+document.fonts.ready.then(fixClockWidth);
 
 // 降水粒子：在相机周围 2R×H 的盒子里循环（着色器里按时间下落 + 取模，不占 CPU）；小屋屋顶下面挖空，屋里看不到雨雪、窗外看得到
 const P_R = 24, P_H = 22;
@@ -1050,10 +1074,24 @@ float en(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
 
   // 路两边铺一窄条落叶：路边不透明，往外 1–2m 渐隐到草地（宽度沿路起伏），压在地面上、路面下
   const L = planarUV('base_box'); if (!L) return;
-  const leafW = (i) => w / 2 + 1.2 + 0.6 * Math.sin(i * 0.37) + 0.3 * Math.sin(i * 1.3 + 1);
+  const leafW = (i) => w / 2 + 2.2 + 0.8 * Math.sin(i * 0.37) + 0.4 * Math.sin(i * 1.3 + 1);
   const leaves = new THREE.Mesh(ribbon(curve, pts, (i) => [[leafW(i), 0], [w / 2, 1], [-w / 2, 1], [-leafW(i + 50), 0]], L.uv, L.y - 0.002),
     Object.assign(L.material.clone(), { transparent: true, depthWrite: false, vertexColors: true, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 }));
-  leaves.material.onBeforeCompile = (sh) => { antiTile(sh, ''); groundCover(sh); };
+  // 落叶带边缘：顶点色的线性渐隐 + 三层噪声（1.5m 大块、35cm 成团、8cm 碎叶）再卡阈值 → 一团团参差散开，最外面零星几片，不是一条整齐的渐变带
+  leaves.material.onBeforeCompile = (sh) => {
+    antiTile(sh, '');
+    sh.vertexShader = 'varying vec2 vLeafP;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvLeafP = (modelMatrix * vec4(position, 1.0)).xz;');
+    sh.fragmentShader = `varying vec2 vLeafP;
+float lh(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float ln(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(lh(i), lh(i + vec2(1, 0)), f.x), mix(lh(i + vec2(0, 1)), lh(i + 1.0), f.x), f.y); }
+` + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+        float ln3 = 0.45 * ln(vLeafP / 1.5) + 0.35 * ln(vLeafP / 0.35 + 7.3) + 0.2 * ln(vLeafP / 0.08 + 3.1);
+        float la = vColor.a + (ln3 - 0.5) * 1.3;
+        diffuseColor.a = opacity * smoothstep(0.12, 0.75, la);
+        diffuseColor.rgb *= mix(0.6, 1.0, smoothstep(0.2, 1.0, la)); // 越往外越暗、越稀，融进暗草地`);
+    groundCover(sh);
+  };
   leaves.receiveShadow = true;
   scene.add(leaves);
 }
@@ -1184,14 +1222,18 @@ function pathSidePoints(rand, n, gap, taken) {
 }
 
 let forestCenter;
+const TREE_K = 1.3; // 所有树整体放大（2026-10-20 用户要 1.3 倍）；靠近小屋的仍按下面的 fit 缩小
 function plant(parts, pts, rand, hMin, hMax, y) {
   const tint = new THREE.Color(), m = new THREE.Matrix4(), q = new THREE.Quaternion(), s = new THREE.Vector3(), p = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
   const ims = parts.map(({ geometry, material }) => new THREE.InstancedMesh(geometry, material, pts.length));
   pts.forEach(([x, z], i) => {
-    let h = hMin + (hMax - hMin) * rand(), w = h * (0.7 + rand() * 0.6); // 胖瘦差别大一点
+    let h = (hMin + (hMax - hMin) * rand()) * TREE_K, w = h * (0.7 + rand() * 0.6); // 胖瘦差别大一点
     // 树冠边缘离小屋中心至少 7m（院子角 5.7m + 屋檐余量），太胖就按比例缩小，缩太多就不种
     const room = Math.hypot(x - forestCenter.x, z - forestCenter.z) - 7, fit = room / ((parts.radius || 0.3) * w);
     if (fit < 1) { if (fit < 0.5) { h = w = 0; } else { h *= fit; w *= fit; } }
+    // 树放大后路边的树冠会伸到路上（开场贴路 2.4m 高飞过）：树冠边缘离路中心至少 1.3m，只收窄不降高，最多收到 0.6
+    if (w && room < 160) { let d = 1e9; for (const [px, pz] of pathClear) d = Math.min(d, (px - x) ** 2 + (pz - z) ** 2);
+      w *= THREE.MathUtils.clamp((Math.sqrt(d) - 1.3) / ((parts.radius || 0.3) * w), 0.6, 1); }
     m.compose(p.set(x, y, z), q.setFromAxisAngle(up, rand() * Math.PI * 2), s.set(w, h, w));
     ims.forEach((im) => im.setMatrixAt(i, m));
     // 每棵树按色卡比例随机取一种树冠色，再加 ±8% 明暗
@@ -1318,7 +1360,7 @@ loader.load('cabin.glb', async (gltf) => {
   sun.target.position.copy(center);
   const s = sun.shadow.camera; s.left = s.bottom = -r; s.right = s.top = r; s.near = 0.1; s.far = r * 5;
   s.updateProjectionMatrix();
-  window.cabin = { scene, camera, controls, model, box, renderer, layers, toggles, cover, wx, sky, roofWx, closeView, select, meshes, people, THREE, hov: () => [hovered, hoverDirty, !!fly, !!intro, pointer.lastEvent && pointer.lastEvent.clientX] }; // 调试用
+  window.cabin = { scene, camera, controls, model, box, renderer, layers, toggles, cover, wx, sky, roofWx, closeView, select, meshes, people, THREE, get held() { return held; }, get hand() { return hand; }, get HAND() { return HAND; }, wake: (id, a) => wakePerson(id, a), get drops() { return drops; }, hov: () => [hovered, hoverDirty, !!fly, !!intro, pointer.lastEvent && pointer.lastEvent.clientX] }; // 调试用
   T('setup');
   const peopleReady = loadPeople().catch(console.error); // 和种树一起加载，预热前要到齐（材质一起编译）
   await yieldFrame();
@@ -1640,10 +1682,15 @@ const INFO = {
   loft_rail: ['Railing', 'Loft', 'Along the loft\'s edge, lest anyone tumble down.'],
   door_wood: ['Plank Door', 'Exterior', 'A thick plank door against wind and snow.'],
   roof_snow: ['Snow upon the Roof', 'Exterior', 'Give it a knock and down it slides.'],
-  person_man: ['Old Man', 'Parlour', 'Settled into the settee, facing the stove.'],
+  person_man: ['The Inspector', 'Parlour', 'Keeping the stove going, in the hollow of the settee.'],
+  person_woman: ['The Clerk', 'Loft', ''], // 区域、说明加载时按她坐哪儿填（PEOPLE 里的 pick）
 };
 // 故事（2026-10-17，《无名测绘员的遗稿》译成老式英文）：按「卡片标题|区域」对应，两盏阁楼顶灯、两张凳子共用一段
 const STORY = {
+  // 两个调查员（2026-10-20 用户定的故事：报告断了以后测绘局派来调查测绘员失踪的）
+  'The Inspector|Parlour': `Sent up by the Survey Office when the reports stopped coming. Thirty years ago, it was his signature on the Surveyor's commission.`,
+  'The Clerk|Loft': `A young clerk of the Survey Office. She had read every report he ever sent, though no one had asked her to.`,
+  'The Clerk|Parlour': `A young clerk of the Survey Office. She had read every report he ever sent, though no one had asked her to. The last bearing in his notes points to the ✕.`,
   'Plank Door|Exterior': `Iron strap-hinges, a latch and a night-bolt: the stoutest guard the cabin has. On the wildest nights the latch would rattle as though the forest meant to come in. Yet in his later years he never barred it fast, but left it a crack ajar, that whatever was out there might know a fire burned within. Open, it looks as if he has but stepped out with the lantern to split wood, and will be back directly, shaking the snow from his shoulders.`,
   'Snow upon the Roof|Exterior': `Come winter, the snow lay half a yard deep upon the shingles. When the storm had passed he would rap the eaves with a long pole and send it all thundering down — "letting the old house wash her face," he called it. In his journal he wrote: "Snow falling makes all things equal; but when it melts, only where a fire is kept does the bare wood show first."`,
   'Porch Lamp|Exterior': `It lights itself at dusk, in fair weather or foul. One winter he broke his leg in the woods and lay half-frozen in the snow, until the faint glimmer of this lamp, far off, drew him crawling home. After that he rigged it to burn whenever the dark came on. It does not light the way for guests — only for those coming home.`,
@@ -1797,7 +1844,9 @@ const STORY_ZH = {
   'Coat Hooks|Loft': ['衣钩', '阁楼的衣钩上什么都没挂。以前挂着睡袍和换下来的旧衣服，后来全收进了矮柜。他最后一次把衣物收好归位——这间阁楼是按“长久不再使用”的方式整理的。'],
   'Towel|Loft': ['挂着的毛巾', '挂在阁楼角落。还是 S 形搭在绳子上。他洗漱完上楼，总习惯折两下搭上去，让它在屋顶下的暖气里晾干，这个习惯三十年没变过。'],
   'Ceiling Lamp|Loft': ['顶灯', '床边一盏，摇椅边一盏。夜里摇椅的灯先亮，他上床后灯熄，床边的灯微亮。这是他有意设计的节律：动与静的轮换，像潮汐，像呼吸。'],
-  'Old Man|Parlour': ['老人', '坐在长沙发上，对着炉火。'],
+  'The Inspector|Parlour': ['老稽查', '守着炉火，坐在长沙发的凹陷里。报告断了以后，测绘局派他上山来；三十年前，测绘员委任状上签的就是他的名字。'],
+  'The Clerk|Loft': ['书记员', '在摇椅上读测绘员的遗稿。测绘局年轻的书记员，他寄回的每一份报告她都读过，虽然没人让她读。'],
+  'The Clerk|Parlour': ['书记员', '在书桌前抄他的方位记录。测绘局年轻的书记员，他寄回的每一份报告她都读过，虽然没人让她读；最后一条方位，指向那个 ✕。'],
 };
 // 进房间时标题下淡入的一句（Journal 里有同样的段落）
 const ROOM_NOTES = {
@@ -1829,19 +1878,30 @@ function infoOf(name) {
 const PEOPLE = [
   // 起居室长沙发右边那块坐垫（x -0.14…0.52，坐面 y 0.69，面朝北边的炉子）；坐姿骨盆在脚后 0.34m、离脚底 0.58m（×scale）
   // scale：原模型连头发 1.81m，偏高偏壮；缩到 0.94 ≈ 1.70m（门 1.97m、阁楼下净高 2.0m）
-  { id: 'person_man', url: 'characters/man.glb', pos: [0.19, 0.25, 0.07], standY: 0.26, yaw: Math.PI, scale: 0.94, mode: 'sit' },
+  { id: 'person_man', url: 'characters/man.glb', pos: [0.19, 0.25, 0.07], standY: 0.26, yaw: Math.PI, scale: 0.94, mode: 'sit', seat: 'living_sofa' },
+  // 女调查员：Rhino 模型里的 Female_Peasant（服装 + 女性基础人物的头 + Hair_Buns 盘发），Rhino 里 1.60m、scale 0.896。
+  // 打开页面随机二选一：阁楼摇椅上看书（Sitting_Read_Loop + Book），或书桌前写笔记（Sitting_Write_Loop + Notebook、Pen）；这两个动作是 Blender 里用 IK 在坐姿上摆的。
+  // 她的坐姿骨盆在脚后 0.324、坐面比根节点高 0.444（未缩放，男的是 0.34 / 0.468）。调试：网址带 ?woman=read / ?woman=desk 固定一种。
+  { id: 'person_woman', url: 'characters/woman.glb', scale: 0.896, mode: 'sit', sitBack: 0.324, sitUp: 0.444,
+    pick: () => (/[?&]woman=desk/.test(location.search) ? false : /[?&]woman=read/.test(location.search) || Math.random() < 0.5) ? { seat: 'loft_rocking_chair', idle: 'Sitting_Read_Loop', props: ['Book'], area: 'Loft', desc: 'Reading the Surveyor\'s papers in the rocking chair.' }
+      : { seat: 'loft_chair', idle: 'Sitting_Write_Loop', props: ['Notebook', 'Pen'], area: 'Parlour', desc: 'Copying out his bearings at the desk.' } },
 ];
 const MOODS = {
   sit: { idle: 'Sitting_Idle_Loop', extra: ['Sitting_Talking_Loop'], hit: [0, 0.85, -0.2, 0.95] },
   stand: { idle: 'Idle_Loop', extra: ['Idle_Talking_Loop', 'Interact'], hit: [0, 0.9, 0, 1.8] },
 };
+const moodOf = (p) => (p.moods && p.moods[p.mode]) || MOODS[p.mode]; // 女调查员坐着的待机是看书 / 写字
 const people = new Map(); // id → { root, mixer, acts, cur, mode, next, hit, tasks, play, setMode }
 async function loadPeople() {
   await Promise.all(PEOPLE.map(async (P) => {
     const gltf = await loader.loadAsync(P.url);
+    const pk = P.pick ? P.pick() : null; if (pk) { P.seat = pk.seat; INFO[P.id][1] = pk.area; INFO[P.id][2] = pk.desc; }
     const root = new THREE.Group(); root.name = P.id; // 名字 = INFO 的键，点选、高亮都按这个图层名
     root.add(gltf.scene);
-    root.position.set(...P.pos); root.rotation.y = P.yaw; root.scale.setScalar(P.scale || 1);
+    root.scale.setScalar(P.scale || 1);
+    if (P.pos) { root.position.set(...P.pos); root.rotation.y = P.yaw; }
+    else { const a = seatPose({ root, sitBack: P.sitBack, sitUp: P.sitUp }, P.seat); root.position.set(a.x, a.y, a.z); root.rotation.y = SEATS[P.seat].yaw; }
+    for (const n of ['Book', 'Notebook', 'Pen']) { const o = gltf.scene.getObjectByName(n); if (o) o.visible = !!pk && pk.props.includes(n); } // 道具：看书只露书，写字只露本子和笔
     gltf.scene.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; o.frustumCulled = false; } }); // 蒙皮网格包围球不跟动作，别被裁掉
     // 点选用隐形胶囊：蒙皮网格逐面射线慢，而且包围球是静止姿势的
     const hit = new THREE.Mesh(new THREE.CapsuleGeometry(0.24, 1, 2, 8), new THREE.MeshBasicMaterial({ visible: false }));
@@ -1849,7 +1909,8 @@ async function loadPeople() {
     const mixer = new THREE.AnimationMixer(gltf.scene), acts = {}, head = gltf.scene.getObjectByName('Head');
     for (const c of gltf.animations) acts[c.name] = mixer.clipAction(c);
     for (const n of ['Sitting_Enter', 'Sitting_Exit', 'Interact', 'PickUp_Table']) if (acts[n]) { acts[n].setLoop(THREE.LoopOnce); acts[n].clampWhenFinished = true; }
-    const p = { root, mixer, acts, cur: null, mode: P.mode, next: 4 + Math.random() * 8, hit, head, tasks: [], sitY: P.pos[1], standY: P.standY ?? P.pos[1] };
+    const p = { root, mixer, acts, cur: null, mode: P.mode, next: 4 + Math.random() * 8, hit, head, tasks: [], sitY: root.position.y, standY: P.standY ?? root.position.y, seat: P.seat || null, roam: 70 + Math.random() * 90,
+      sitBack: P.sitBack ?? 0.34, sitUp: P.sitUp ?? 0.468, moods: pk ? { sit: { ...MOODS.sit, idle: pk.idle, extra: [] } } : null };
     p.play = (name, fade = 0.5) => {
       const a = acts[name]; if (!a || a === p.cur) return;
       a.reset().setEffectiveWeight(1).play(); a.timeScale = 1;
@@ -1857,33 +1918,119 @@ async function loadPeople() {
       p.cur = a;
     };
     p.setMode = (mode) => {
-      p.mode = mode; const h = MOODS[mode].hit;
+      p.mode = mode; const h = moodOf(p).hit;
       hit.position.set(h[0], h[1], h[2]); hit.scale.set(1, h[3] / 1.48, 1); // 胶囊原高 1 + 2×0.24
-      p.play(MOODS[mode].idle);
+      p.play(moodOf(p).idle);
     };
     p.setMode(P.mode);
+    if (SEATS[p.seat]?.rock) p.ride = { x: root.position.x, y: root.position.y, z: root.position.z, yaw: root.rotation.y }; // 坐在摇椅上：跟着椅子摇
     mixer.update(Math.random() * 3); // 错开起始相位
     indoorShade(root); // 屋里压暗天光，和家具一致
     scene.add(root); layers.set(P.id, root); people.set(P.id, p);
+    if (P.id === 'person_man') await loadHand(gltf.scene);
   }));
 }
-// 点一下人物：按 ROUTINES 起来活动一圈再回原位。步骤：['anim', 动作]、['walk', x, z]、['face', x, z]（原地转向某点）、['turn', 朝向]、['idle', 秒]。
-// 坐标是屋里的 x、z；老人的路线：沙发前起身 → 斜穿到炉门左前方（炉子朝南，炉门半开时伸到 z -0.92；避开圆木茶几、东边的凳子）→ 拨火、暖手 → 原路回来转身坐下。
-const ROUTINES = {
-  person_man: [['anim', 'Sitting_Exit'], ['walk', 1.2, -0.72], ['face', 1.42, -1.3], ['anim', 'Interact'], ['idle', 3],
-    ['walk', 0.19, 0.07], ['turn', Math.PI], ['anim', 'Sitting_Enter']],
-};
-const WALK_SPEED = 1.0; // 米/秒，按 Walk_Loop 的步幅（一个周期 1.33s 两步、脚相对身体移 0.68m）
-function wakePerson(id) {
-  const p = people.get(id), R = ROUTINES[id];
-  if (!p || !R || p.tasks.length || p.mode !== 'sit') return; // 已经在活动就不打断
-  p.tasks = R.map((s) => s.slice());
+async function loadHand(man) { // 第一人称拿东西的右手（../blender/scripts/make_hand.py 从老人身上切的握拳右手），材质用老人身上同名的
+  const mats = new Map(); man.traverse((o) => { if (o.isMesh) mats.set(o.material.name, o.material); });
+  const g = (await loader.loadAsync('characters/hand.glb')).scene;
+  const MAT = { HandSkin: 'MI_Superhero_Male', HandSleeve: 'M_Shirt' }; // glb 里没带材质（导出 PLACEHOLDER 实际是不导出），按网格名对上
+  g.traverse((o) => { if (o.isMesh) { o.material = mats.get(MAT[o.name]) || o.material; o.frustumCulled = false; o.castShadow = false; o.layers.set(HELD_LAYER); } });
+  g.visible = false; scene.add(g); hand = g;
 }
+// —— 座位（2026-10-20）：人物和第一人称玩家都能坐。pelvis = 坐下时骨盆的位置（坐面中心略靠后，无头浏览器从上往下打射线量的坐面），y = 坐面高，yaw = 坐下后面朝的方向；
+// 坐姿（glb）：骨盆在脚后 0.34m、比根节点高 0.468m（×scale；沙发坐面 0.69 → 根节点 0.25，和原来手调的一致）。
+// pull：书桌椅要先往外拉开人才站得进去（不拉的话站的位置插进桌子），坐下后连人带椅推回去，起身时再拉开、往旁边让一步、推回。out = 拉椅子 / 起身后让开时站的地方。
+// rock：摇椅，坐着时一直轻轻摇，人跟着椅子的变换一起动。
+const SEATS = {
+  living_sofa: { pelvis: [0.19, 0.39], y: 0.69, yaw: Math.PI, node: 'sofa' }, // 长沙发右坐垫（老人的老位置）
+  loft_chair: { pelvis: [-0.894, -1.124], y: 0.70, yaw: -Math.PI / 2, pull: [0.4, 0], out: [-0.83, -0.62], node: 'desk' }, // 书桌椅（名字带 loft，其实在一楼起居室西北角），面朝西边的书桌
+  loft_rocking_chair: { pelvis: [-0.65, 1.08], y: 2.70, yaw: Math.atan2(0.733, -0.68), rock: true }, // 阁楼摇椅，顺着摇杆朝东南
+  entry_toilet: { pelvis: [-1.43, 1.259], y: 0.58, yaw: Math.PI / 2, node: 'wc' }, // 卫生间马桶，面朝东边的门
+};
+function seatPose(p, name, k = 0) { // 坐在这个座位上时根节点的位置（k = 椅子拉出来的程度）
+  const S = SEATS[name], s = p.root.scale.x, pl = S.pull || [0, 0], bk = (p.sitBack ?? 0.34) * s;
+  return { x: S.pelvis[0] + pl[0] * k + Math.sin(S.yaw) * bk, z: S.pelvis[1] + pl[1] * k + Math.cos(S.yaw) * bk, y: S.y - (p.sitUp ?? 0.468) * s };
+}
+const seatTaken = (name, me) => [...people.values()].some((q) => q !== me && q.seat === name);
+// 一楼的走路路线：节点 + 连通边，BFS 找最短的节点序列（屋里家具多，直线会穿过茶几、沙发、隔墙）。坐标 x 东、z 南。
+// 起居室在隔墙（z 0.75）北边，东边过道 x 0.77–1.74 连到南边门厅，门厅西头的折叠门（x -0.6，z 0.83–1.5）进卫生间。
+const NAV = {
+  sofa: [0.19, 0.07], ne: [0.55, -0.15], hall: [1.05, -0.15], hall2: [1.05, 1.25], stove: [1.2, -0.72],
+  entry: [0.3, 1.3], entryW: [-0.4, 1.2], wcIn: [-0.85, 1.15], wc: [-1.0, 1.25], sw: [-0.75, -0.18], desk: [-0.83, -0.62],
+};
+const NAV_EDGES = [['sofa', 'ne'], ['sofa', 'sw'], ['sofa', 'stove'], ['ne', 'hall'], ['ne', 'stove'], ['hall', 'stove'], ['hall', 'hall2'], ['hall2', 'entry'],
+  ['entry', 'entryW'], ['entryW', 'wcIn'], ['wcIn', 'wc'], ['sw', 'desk']];
+function navPath(from, to) { // 节点名 → 节点名，返回途经的坐标（不含起点）
+  const adj = {}; for (const [a, b] of NAV_EDGES) { (adj[a] ||= []).push(b); (adj[b] ||= []).push(a); }
+  const prev = { [from]: null }, q = [from];
+  while (q.length) { const n = q.shift(); if (n === to) break; for (const m of adj[n] || []) if (!(m in prev)) { prev[m] = n; q.push(m); } }
+  const out = []; for (let n = to; n && n !== from; n = prev[n]) out.unshift(NAV[n]);
+  return out;
+}
+function nearNode(x, z) { let best = null, bd = 1e9; for (const [n, [nx, nz]] of Object.entries(NAV)) { const d = Math.hypot(nx - x, nz - z); if (d < bd) { bd = d; best = n; } } return best; }
+function sitTasks(p, name) { // 走到座位前 → （拉椅子）→ 转身 → 坐下 →（推回去）
+  const S = SEATS[name], a = seatPose(p, name, S.pull ? 1 : 0), t = [];
+  if (S.pull) t.push(['walk', ...S.out], ['face', S.pelvis[0], S.pelvis[1]], ['chair', name, 1]);
+  t.push(['walk', a.x, a.z], ['turn', S.yaw], ['seat', name], ['anim', 'Sitting_Enter']);
+  if (S.pull) t.push(['chair', name, 0]);
+  return t;
+}
+function riseTasks(p, n = p.seat) { // 起身：（拉开椅子）→ 站起来 →（往旁边让一步、把椅子推回去）
+  const S = SEATS[n], t = [];
+  if (!n) return p.mode === 'sit' ? [['anim', 'Sitting_Exit']] : [];
+  if (S.pull) t.push(['chair', n, 1]);
+  t.push(['anim', 'Sitting_Exit'], ['unseat']);
+  if (S.pull) t.push(['walk', ...S.out], ['chair', n, 0]);
+  return t;
+}
+function goTasks(p, x, z, toNode) { // 从现在的位置沿 NAV 走到某个节点
+  return navPath(nearNode(x, z), toNode).map(([nx, nz]) => ['walk', nx, nz]);
+}
+// 老人的日常：坐在沙发上，隔 1–2.5 分钟（或被点一下）起来去做一件事再回沙发：拨火暖手、去书桌坐一会儿、上厕所
+const ACTIVITIES = {
+  stove: (p) => [['face', 1.42, -1.3], ['anim', 'Interact'], ['idle', 3]],
+  desk: (p) => [...sitTasks(p, 'loft_chair'), ['idle', 15 + Math.random() * 15], ...riseTasks(p, 'loft_chair')],
+  wc: (p) => [...sitTasks(p, 'entry_toilet'), ['idle', 8 + Math.random() * 8], ...riseTasks(p, 'entry_toilet')],
+};
+const ROUTINES = { person_man: { home: 'living_sofa', acts: ['stove', 'desk', 'wc'] } };
+function planOuting(p, id, act) {
+  const R = ROUTINES[id], home = R.home, r = p.root;
+  const t = riseTasks(p); // 先从现在的座位起来
+  const startX = p.seat && SEATS[p.seat].out ? SEATS[p.seat].out[0] : r.position.x, startZ = p.seat && SEATS[p.seat].out ? SEATS[p.seat].out[1] : r.position.z;
+  const goal = act === 'stove' ? 'stove' : SEATS[act === 'desk' ? 'loft_chair' : 'entry_toilet'].node;
+  t.push(...goTasks(p, startX, startZ, goal), ...ACTIVITIES[act](p));
+  const back = act === 'stove' ? 'stove' : goal;
+  t.push(...navPath(back, SEATS[home].node).map(([x, z]) => ['walk', x, z]), ...sitTasks(p, home));
+  return t;
+}
+function goHome(p, id) { // 玩家退出后人留在别处：（起身）走回自己的座位坐下
+  const home = ROUTINES[id].home, S = p.seat && SEATS[p.seat], r = p.root;
+  const sx = S && S.out ? S.out[0] : r.position.x, sz = S && S.out ? S.out[1] : r.position.z;
+  p.tasks = [...riseTasks(p), ...goTasks(p, sx, sz, SEATS[home].node), ...sitTasks(p, home)];
+}
+function wakePerson(id, act) {
+  const p = people.get(id), R = ROUTINES[id];
+  if (!p || !R || p.tasks.length || p.player || p.mode !== 'sit') return; // 已经在活动就不打断
+  const acts = R.acts.filter((a) => a !== p.lastAct && !(a === 'desk' && seatTaken('loft_chair', p)) && !(a === 'wc' && seatTaken('entry_toilet', p)));
+  act = act || acts[Math.floor(Math.random() * acts.length)];
+  p.lastAct = act; p.tasks = planOuting(p, id, act); p.roam = 70 + Math.random() * 90;
+}
+const WALK_SPEED = 1.0; // 米/秒，按 Walk_Loop 的步幅（一个周期 1.33s 两步、脚相对身体移 0.68m）
+let npcFloors = [], npcFloorsT = 0;
+const NPC_FLOOR = /^(deck_|floor_|platform_|base_box$|entry_doormat$)|_rug$/; // 只认地板：站点在沙发占地里，往下打到沙发底座会把人抬高 25cm
+const npcRay = new THREE.Raycaster(); npcRay.firstHitOnly = true;
+function floorBelow(x, y, z) { // 人物走路贴地：起居室木台 0.25、过道 0.16、门厅 0.10 高低不一
+  if ((npcFloorsT -= 1) < 0) { const hits = new Set([...people.values()].map((q) => q.hit)); npcFloors = meshes.filter((m) => !hits.has(m) && isShown(m) && NPC_FLOOR.test(m.parent.name)).concat(ground); npcFloorsT = 120; }
+  npcRay.set(_npcO.set(x, y + 0.3, z), _fpDn); npcRay.far = 0.8;
+  const h = npcRay.intersectObjects(npcFloors, false)[0]; return h ? h.point.y : null;
+}
+const _npcO = new THREE.Vector3();
 function runTask(p, dt) {
   const T = p.tasks[0], k = T[0], r = p.root;
   if (!T.on) {
     T.on = true; T.t = 0;
-    p.play(k === 'anim' ? T[1] : k === 'walk' ? 'Walk_Loop' : MOODS.stand.idle, 0.3);
+    if (k === 'anim' || k === 'walk' || k === 'face' || k === 'turn' || k === 'idle') p.play(k === 'anim' ? T[1] : k === 'walk' ? 'Walk_Loop' : (p.mode === 'sit' && k === 'idle' ? moodOf(p) : MOODS.stand).idle, 0.3);
+    if (k === 'chair') { const g = layers.get(T[1]); T.from = g ? g.userData.pullK || 0 : 0; }
   }
   T.t += dt;
   let done;
@@ -1893,29 +2040,43 @@ function runTask(p, dt) {
     if (T[1] === 'Sitting_Enter') r.position.y = p.standY + (p.sitY - p.standY) * e;
     done = a.time >= d - 0.05;
   } else if (k === 'idle') done = T.t >= T[1];
-  else {
+  else if (k === 'seat') { const a = seatPose(p, T[1], SEATS[T[1]].pull ? 1 : 0); p.seat = T[1]; p.standY = r.position.y; p.sitY = a.y; done = true; }
+  else if (k === 'unseat') { p.seat = null; r.rotation.x = r.rotation.z = 0; done = true; }
+  else if (k === 'chair') { // 拉开 / 推回椅子；人坐在上面就一起挪
+    const g = layers.get(T[1]), S = SEATS[T[1]], e = Math.min(1, T.t / 0.6), kk = T.from + (T[2] - T.from) * e * e * (3 - 2 * e);
+    if (g) { const dk = kk - (g.userData.pullK || 0); g.userData.pullK = kk; g.position.set(S.pull[0] * kk, 0, S.pull[1] * kk); shadowDirty = true;
+      if (p.seat === T[1] && p.mode === 'sit') { r.position.x += S.pull[0] * dk; r.position.z += S.pull[1] * dk; } }
+    done = e >= 1;
+  } else {
     const dx = T[1] - r.position.x, dz = T[2] - r.position.z, dist = Math.hypot(dx, dz);
     const da = angDiff(r.rotation.y, k === 'turn' ? T[1] : Math.atan2(dx, dz)), lim = 4 * dt; // 模型面朝 +Z：朝向 = atan2(dx, dz)
     r.rotation.y += THREE.MathUtils.clamp(da, -lim, lim);
     if (k === 'walk') {
       const v = Math.min(dist, WALK_SPEED * r.scale.x * dt * (Math.abs(da) < 1 ? 1 : 0.3)); // 还没转过来先慢走
       if (dist > 1e-4) { r.position.x += dx / dist * v; r.position.z += dz / dist * v; }
+      const fy = floorBelow(r.position.x, r.position.y, r.position.z); if (fy !== null) r.position.y += (fy + 0.01 - r.position.y) * Math.min(1, dt * 10);
       done = dist - v < 0.01;
     } else done = Math.abs(da) < 0.02;
   }
   if (!done) return;
   p.tasks.shift();
   if (T[1] === 'Sitting_Exit') p.setMode('stand');
-  if (T[1] === 'Sitting_Enter') { p.setMode('sit'); p.next = 10 + Math.random() * 15; }
+  if (T[1] === 'Sitting_Enter') { p.setMode('sit'); p.next = 10 + Math.random() * 15; if (SEATS[p.seat]?.rock) p.ride = { x: r.position.x, y: r.position.y, z: r.position.z, yaw: r.rotation.y }; }
+  if (k === 'unseat') p.ride = null;
 }
 function updatePeople(dt) {
-  for (const p of people.values()) {
+  for (const [id, p] of people) {
     p.mixer.update(dt);
     if (p.tasks.length) { runTask(p, dt); continue; }
     if (p.player) continue; // 玩家在操控：动作由 updateFP 管
-    const m = MOODS[p.mode], a = p.cur, clip = a && a.getClip();
+    if (ROUTINES[id] && (p.roam -= dt) < 0) { // 隔 1–2.5 分钟自己起来去做点事；不在自己座位上（玩家退出时留在别处）就先回去
+      p.roam = 70 + Math.random() * 90;
+      if (p.mode === 'sit' && p.seat === ROUTINES[id].home) wakePerson(id); else goHome(p, id);
+      if (p.tasks.length) continue;
+    }
+    const m = moodOf(p), a = p.cur, clip = a && a.getClip();
     if (a && a.loop === THREE.LoopOnce && a.time >= clip.duration - 0.05) { p.play(m.idle); p.next = 10 + Math.random() * 15; continue; } // 一次性动作做完回到待机
-    if ((p.next -= dt) > 0) continue;
+    if ((p.next -= dt) > 0 || !m.extra.length) continue;
     if (clip && clip.name === m.idle) { // 待机一阵后做个小动作，聊天类的做 1–2 遍
       const n = m.extra[Math.floor(Math.random() * m.extra.length)]; p.play(n, 0.6);
       p.next = p.acts[n].loop === THREE.LoopOnce ? 99 : p.acts[n].getClip().duration * (1 + Math.floor(Math.random() * 2));
@@ -1982,7 +2143,9 @@ function splitParts(root) {
   const byNearest = (from, keyRe, partRe, to) => { // 同名零件（刀刃、刀柄、铆钉…）按离哪个主体最近分组
     const src = root.getObjectByName(from); if (!src) return;
     const keys = src.children.filter((o) => keyRe.test(o.name)).map(cx).sort((a, b) => a.z - b.z || a.x - b.x);
-    const near = (o) => { const c = cx(o); let bi = 0; keys.forEach((q, j) => { if (c.distanceTo(q) < c.distanceTo(keys[bi])) bi = j; }); return bi; };
+    // 只按水平距离：这些都竖着挂成一排，刀把比刀刃高 10–16cm，按三维距离中间那把刀的刀把离隔壁刀刃更近（2026-10-20 用户发现刀把分错）
+    const hd = (c, q) => Math.hypot(c.x - q.x, c.z - q.z);
+    const near = (o) => { const c = cx(o); let bi = 0; keys.forEach((q, j) => { if (hd(c, q) < hd(c, keys[bi])) bi = j; }); return bi; };
     keys.forEach((_, i) => pull(from, to + '_' + (i + 1), (o) => partRe.test(o.name) && near(o) === i));
   };
   byNearest('wall_pot_rail', /^pot_skillet(_\d+)?$/, /^pot_skillet/, 'take_skillet');
@@ -2367,12 +2530,14 @@ function setupRocker() {
   rocker.g = g;
   toggles.set('loft_rocking_chair', { on: false, k: 0, parts: [], click: () => { rocker.amp = Math.min(ROCKER.amp, rocker.amp * Math.exp(-rocker.t / ROCKER.decay) + ROCKER.amp * 0.8); rocker.t = 0; } });
 }
-const _rk = { T: new THREE.Matrix4(), R: new THREE.Matrix4(), M: new THREE.Matrix4(), inv: new THREE.Matrix4(), n: new THREE.Vector3() };
+const _rk = { T: new THREE.Matrix4(), R: new THREE.Matrix4(), M: new THREE.Matrix4(), inv: new THREE.Matrix4(), n: new THREE.Vector3(), q: new THREE.Quaternion() };
 function updateRocker(dt) {
-  if (!rocker.g || rocker.t > 12) return;
-  rocker.t += dt; shadowDirty = true;
+  const rider = [...people.values()].find((q) => q.ride && !q.tasks.length);
+  if (!rocker.g || (rocker.t > 12 && !rider)) return;
+  rocker.t += dt; if (!rider) shadowDirty = true; // 有人坐着的轻摇不重画阴影（否则一直每帧重画阴影图）
   const { at, dir, R, period, decay } = ROCKER, t = rocker.t;
-  const th = rocker.t > 12 ? 0 : rocker.amp * Math.exp(-t / decay) * Math.sin(2 * Math.PI * t / period);
+  if (rider) { rocker.rt = (rocker.rt || 0) + dt; rocker.t = 13; } // 有人坐着：慢慢地一直摇（人走了就停，下次点再摇）
+  const th = rider ? 0.045 * Math.sin(2 * Math.PI * rocker.rt / 1.9) : rocker.t > 12 ? 0 : rocker.amp * Math.exp(-t / decay) * Math.sin(2 * Math.PI * t / period);
   rocker.th = th;
   const n = _rk.n.set(-dir[1], 0, dir[0]); // 转轴：水平、垂直于摇杆
   const C = [at[0], at[1] + R, at[2]], s = R * th; // 曲率中心；滚动时它沿摇杆方向走 R·θ（n × 上 = (−n.z, 0, n.x)）
@@ -2380,6 +2545,9 @@ function updateRocker(dt) {
   const g = rocker.g; g.updateMatrixWorld(); _rk.inv.copy(g.matrixWorld).invert();
   const local = _rk.inv.multiply(_rk.M).multiply(g.matrixWorld);
   for (const { m, base } of rocker.meshes) { m.matrix.copy(local).multiply(base); m.matrixWorldNeedsUpdate = true; }
+  if (rider) { const r = rider.root, B = rider.ride; // 坐着的人：同一个世界变换，外加跟着往后仰
+    r.position.set(B.x, B.y, B.z).applyMatrix4(_rk.M);
+    r.quaternion.setFromAxisAngle(n, th).multiply(_rk.q.setFromAxisAngle(_fpU, B.yaw)); }
 }
 const toggleOf = (name) => toggles.get(name === 'stove_firebox' ? 'stove_fire' : name) || toggles.get(DOORS[name]?.parent);
 function toggle(name) { const t = toggleOf(name); if (t.click) return t.click(); t.on = !t.on; } // click：不是开/关，点一下触发一次动作（摇椅）
@@ -2565,7 +2733,7 @@ function prewarm() {
   for (const o of hidden) o.visible = false;
   camera.position.copy(p); camera.quaternion.copy(q); camera.fov = f; camera.updateProjectionMatrix();
 }
-function paint(name) { setHL(name, name === selected || name === hovered); }
+function paint(name) { setHL(name, (name === selected || name === hovered) && !(held && held.name === name)); } // 拿在手里的不描边
 function setHovered(name) {
   if (name === hovered) return;
   const prev = hovered; hovered = name; paint(prev); paint(name);
@@ -2578,7 +2746,7 @@ function select(name) {
   card.hidden = !name;
   if (!name) return;
   if (people.has(name)) wakePerson(name); // 点人物：起来活动一圈
-  card.querySelector('#playAs').hidden = !people.has(name) || lite || !!fp; // 触屏还没做摇杆，先不给
+  card.querySelector('#playAs').hidden = name !== 'person_man' || lite || !!fp; // 触屏还没做摇杆，先不给
   const [title, area, desc] = infoOf(name);
   card.querySelector('h2').innerHTML = '';
   card.querySelector('h2').append(title);
@@ -2675,8 +2843,8 @@ let fp = null; // { p, yaw, pitch, keys, solid, floors, solidT, eye, paused, cli
 const fpRay = new THREE.Raycaster(); fpRay.firstHitOnly = true;
 const fpHud = document.createElement('div'); fpHud.id = 'fpHud'; fpHud.hidden = true;
 fpHud.innerHTML = '<div class="dot"></div><div class="help"><b>Click</b> to look about · <b>WASD</b> to walk · <b>Shift</b> to hurry · <b>Esc</b> to stop'
-  + '<br><b>E</b> to take a thing down · hold <b>right button</b> to turn it over'
-  + '<span class="zh">点画面开始 · WASD 走动 · Shift 快走 · E 拿下墙上的东西 · 按住右键翻看 · Esc 结束</span></div><div class="hint"></div>';
+  + '<br><b>E</b> to take a thing · <b>E</b> again to put it back or drop it · hold <b>right button</b> to turn it over'
+  + '<span class="zh">点画面开始 · WASD 走动 · Shift 快走 · E 拿取，再按 E 放回原处或丢在地上 · 按住右键翻看 · Esc 结束</span></div><div class="hint"></div>';
 document.body.append(fpHud);
 const fpHint = fpHud.querySelector('.hint');
 // 不挡路的：墙上的挂件（贴着墙，墙本身会挡）、门帘、挂着的大衣、卫生纸架、毛巾架、地毯、正端在手里的东西
@@ -2684,8 +2852,10 @@ const FP_SOFT = /^(wall_|take_|sink_water_bucket_dipper$|entry_(tp_holder|towel_
 function fpSolid() { // 碰撞用的网格：显示着的、不是自己的胶囊
   return meshes.filter((m) => m !== fp.p.hit && isShown(m) && !FP_SOFT.test(m.parent.name) && !(held && m.parent === held.g));
 }
-// —— 拿起来看：准星对着墙上的枪、斧头、雪鞋、锅、刀、勺子，按 E 摘下来端在手里；按住右键拿到眼前、拖鼠标翻着看；再按 E 挂回原处 ——
-// 图层 Group 的子网格是世界坐标：挪整个 Group，world = T(p)·R(q)·T(-c)，c = 原位中心。端着时 q = 相机朝向 × rel（rel = 拿起那一刻相对相机的朝向，翻看时在相机坐标里转它）
+// —— 拿取（2026-10-20 改）：准星对着墙上的枪、斧头、雪鞋、锅、刀、勺子（伸手够得着，REACH 内）按 E 拿下来握在右手里；
+// 手里有东西时：对着它原来的位置按 E 放回原处，对着别处按 E 往前丢在地上（落在那里的地面/家具面上，平躺），地上的可以再捡起来。按住右键拿到眼前翻看（手放下去）。
+// 图层 Group 的子网格是世界坐标：挪整个 Group，world(v) = X + Q·(v − c0)，c0 = 原位包围盒中心；X、Q 就是一个「姿态」。
+// 握法：PCA 求物件主轴，细的一头当把手，握点在把手端往里 12% 长（4–10cm）；主轴对齐手的握持轴（hand.glb 局部 +Y），up 轴对齐手的 +Z。个别在 GRIP 里改。
 const TAKEABLE = /^(take_|wall_shotgun$|wall_axe$|wall_snowshoes$|sink_water_bucket_dipper$)/;
 const TAKE_INFO = {
   take_skillet: ['Skillet', 'Kitchen', 'Cast iron, black with years of seasoning.'],
@@ -2695,7 +2865,18 @@ const TAKE_INFO = {
   take_ladle: ['Ladle', 'Kitchen', 'For the soup pot.'],
   take_spatula: ['Spatula', 'Kitchen', 'For turning flapjacks in the skillet.'],
 };
-let held = null; // { name, g, c, R, rel, t, back, inspect }
+const REACH = 1.0; // 相机到物件包围盒最近点（米）：伸手 + 探身的距离；原 1.8 用户说像隔空取物
+const GRIP = { wall_shotgun: { end: 'wide', at: 0.3, up: 1 }, wall_snowshoes: { at: 0.06 } }; // end: 握粗的一头；at: 握点离那头的长度比例；up: 1 = 中间那根主轴朝手的 +Z（默认最薄的那根）
+// 手（2026-10-20 按用户给的参考图改，像 FPS 里拿刀）：e = 手肘在手的哪边（相机坐标：右下、略靠后，前臂斜着往上伸进画面），
+// back = 手背朝哪（hand.glb 局部 +X 是手背、-X 是手心；朝镜头右侧 → 看到的是手背和指节，不是手心）；
+// tilt = 东西在拳心里斜着握、往前臂延长的方向转（手腕是死的，握持轴和前臂垂直；转 1.45 rad 后刀身大致竖直朝上）
+function handRot(e, back) { const z = new THREE.Vector3(...e).normalize(), x = new THREE.Vector3(...back); x.addScaledVector(z, -x.dot(z)).normalize();
+  return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, new THREE.Vector3().crossVectors(z, x), z)); }
+const HAND = { pos: new THREE.Vector3(0.18, -0.16, -0.42), rot: handRot([0.3, -0.85, 0.4], [0.5, 0.1, 0.85]), tilt: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -1.45) };
+let hand = null, handK = 0; // hand.glb（loadPeople 里加载）；handK 0 = 手垂在画面外，1 = 端在右下
+let held = null; // { name, g, info, mode: 'up'|'hold'|'back'|'drop', t, from, to, turn, inspect }
+const drops = new Map(); // 丢在地上的：name → 姿态 { X, Q }
+const gripInfo = new Map();
 const HELD_LAYER = 3; let heldLights = false;
 function heldLayer(g, on) {
   if (on && !heldLights) { scene.traverse((o) => { if (o.isLight) o.layers.enable(HELD_LAYER); }); heldLights = true; } // 灯也要在这个 layer 上才照得到它（灯数不变，不会重编译材质）
@@ -2707,47 +2888,162 @@ function drawHeld() {
   camera.layers.set(HELD_LAYER); renderer.render(scene, camera);
   camera.layers.mask = keep.mask; scene.background = keep.bg; renderer.autoClear = keep.auto;
 }
-const _hq = new THREE.Quaternion(), _hq2 = new THREE.Quaternion(), _hp = new THREE.Vector3(), _hc = new THREE.Vector3();
-const _hY = new THREE.Vector3(0, 1, 0), _hX = new THREE.Vector3(1, 0, 0);
+function eig3(m) { // 对称 3×3 矩阵的特征向量（Jacobi），按特征值从大到小 → [v1, v2, v3]
+  const a = m.map((r) => r.slice()), v = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let it = 0; it < 30; it++) for (const [p, q] of [[0, 1], [0, 2], [1, 2]]) {
+    if (Math.abs(a[p][q]) < 1e-12) continue;
+    const th = 0.5 * Math.atan2(2 * a[p][q], a[q][q] - a[p][p]), c = Math.cos(th), s = Math.sin(th);
+    for (let k = 0; k < 3; k++) { const x = a[k][p], y = a[k][q]; a[k][p] = c * x - s * y; a[k][q] = s * x + c * y; }
+    for (let k = 0; k < 3; k++) { const x = a[p][k], y = a[q][k]; a[p][k] = c * x - s * y; a[q][k] = s * x + c * y; }
+    for (let k = 0; k < 3; k++) { const x = v[k][p], y = v[k][q]; v[k][p] = c * x - s * y; v[k][q] = s * x + c * y; }
+  }
+  return [0, 1, 2].sort((i, j) => a[j][j] - a[i][i]).map((i) => new THREE.Vector3(v[0][i], v[1][i], v[2][i]));
+}
+function gripOf(name, g) { // 物件原位的形状：中心、主轴、握点、抽样顶点（相对 c0），按名字缓存（第一次拿时 Group 还在原位）
+  if (gripInfo.has(name)) return gripInfo.get(name);
+  const inv = g.matrixWorld.clone().invert(), m = new THREE.Matrix4(), v = new THREE.Vector3(), pts = [], box = new THREE.Box3();
+  g.traverse((o) => { if (!o.isMesh) return; m.multiplyMatrices(inv, o.matrixWorld); const a = o.geometry.attributes.position, st = Math.max(1, Math.floor(a.count / 4000));
+    for (let i = 0; i < a.count; i += st) { v.fromBufferAttribute(a, i).applyMatrix4(m); pts.push(v.clone()); box.expandByPoint(v); } });
+  const c0 = box.getCenter(new THREE.Vector3()), mean = new THREE.Vector3();
+  pts.forEach((p) => mean.add(p)); mean.divideScalar(pts.length);
+  const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const p of pts) { const d = [p.x - mean.x, p.y - mean.y, p.z - mean.z]; for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) C[i][j] += d[i] * d[j]; }
+  const [a1, a2, a3] = eig3(C);
+  const o = GRIP[name] || {}, ts = pts.map((p) => _hv.copy(p).sub(mean).dot(a1));
+  let t0 = Infinity, t1 = -Infinity; for (const t of ts) { t0 = Math.min(t0, t); t1 = Math.max(t1, t); }
+  const L = t1 - t0;
+  const spread = (lo, hi) => { let s = 0, n = 0; pts.forEach((p, i) => { if (ts[i] >= lo && ts[i] <= hi) { _hv.copy(p).sub(mean); s += _hv.addScaledVector(a1, -ts[i]).lengthSq(); n++; } }); return n ? s / n : 0; };
+  let fromLow = spread(t0, t0 + 0.15 * L) < spread(t1 - 0.15 * L, t1); // 细的一头是把手
+  if (o.end === 'wide') fromLow = !fromLow;
+  const tg = fromLow ? t0 + (o.at ? o.at * L : THREE.MathUtils.clamp(0.12 * L, 0.04, 0.1)) : t1 - (o.at ? o.at * L : THREE.MathUtils.clamp(0.12 * L, 0.04, 0.1)); // 握点在主轴上的位置
+  const gp = new THREE.Vector3(); let n = 0;
+  pts.forEach((p, i) => { if (Math.abs(ts[i] - tg) < 0.02 + 0.03 * L) { gp.add(p); n++; } });
+  if (n) gp.divideScalar(n); else gp.copy(mean).addScaledVector(a1, tg);
+  if (!fromLow) a1.negate(); // a1 从把手指向另一头
+  const up = o.up === 1 ? a2 : a3; if (up.y < 0) up.negate();
+  // 物件局部轴 → 手的轴：a1 → +Y（握持轴），up → +Z
+  const side = new THREE.Vector3().crossVectors(a1, up), mo = new THREE.Matrix4().makeBasis(side, a1, up);
+  const rg = new THREE.Quaternion().setFromRotationMatrix(mo).invert();
+  const info = { c0, gp, a1, a3, rg, R: box.getSize(new THREE.Vector3()).length() / 2, pts: pts.map((p) => p.sub(c0)), box };
+  gripInfo.set(name, info); return info;
+}
+const _hq = new THREE.Quaternion(), _hp = new THREE.Vector3(), _hv = new THREE.Vector3();
+const _hY = new THREE.Vector3(0, 1, 0), _hX = new THREE.Vector3(1, 0, 0), _ray = new THREE.Ray();
+function poseOf(g, c0) { return { X: g.position.clone().add(c0.clone().applyQuaternion(g.quaternion)), Q: g.quaternion.clone() }; }
+function setPose(g, c0, X, Q) { g.quaternion.copy(Q); g.position.copy(X).sub(_hv.copy(c0).applyQuaternion(Q)); }
+function handPose(k) { // 手在世界里的位置、朝向；k < 1 往下沉出画面
+  const p = HAND.pos.clone(); p.y -= (1 - k) * 0.32;
+  return { p: p.applyQuaternion(camera.quaternion).add(camera.position), q: camera.quaternion.clone().multiply(HAND.rot) };
+}
+function holdPose(h) { // 握在手里 ↔ 拿到眼前翻看（k = inspect）
+  const hp = handPose(1), info = h.info;
+  const Q = hp.q.clone().multiply(HAND.tilt).multiply(info.rg);
+  const X = hp.p.clone().sub(_hv.copy(info.gp).sub(info.c0).applyQuaternion(Q));
+  const k = h.inspect; if (k < 0.001) return { X, Q };
+  const d = THREE.MathUtils.clamp(info.R * 1.6, 0.3, 0.8);
+  const Xi = new THREE.Vector3(0, 0, -d).applyQuaternion(camera.quaternion).add(camera.position);
+  const Qi = camera.quaternion.clone().multiply(h.turn).multiply(HAND.rot).multiply(HAND.tilt).multiply(info.rg);
+  return { X: X.lerp(Xi, k), Q: Q.slerp(Qi, k) };
+}
+function aimingAtHome(h) { // 准星对着它原来的位置（原位包围盒放大 12cm）而且够得着
+  const b = h.info.box.clone().expandByScalar(0.12);
+  _ray.set(camera.position, _hv.set(0, 0, -1).applyQuaternion(camera.quaternion));
+  return b.distanceToPoint(camera.position) < REACH && _ray.intersectsBox(b);
+}
+function reachable(name) {
+  const g = name && TAKEABLE.test(name) && layers.get(name);
+  return g && new THREE.Box3().setFromObject(g).distanceToPoint(camera.position) < REACH ? g : null;
+}
+function dropPose(h) { // 往前丢：前方约 0.7m（前面有墙就近一点），从眼高往下找落脚面；最薄的轴竖起来平躺，长轴横在面前稍微歪一点
+  const info = h.info, fwd = new THREE.Vector3(Math.sin(fp.yaw), 0, Math.cos(fp.yaw));
+  fpRay.set(camera.position, fwd); fpRay.far = 0.95;
+  const w = fpRay.intersectObjects(fp.solid, false)[0], d = w ? Math.max(0.2, w.distance - 0.25) : 0.7;
+  const at = camera.position.clone().addScaledVector(fwd, d);
+  fpRay.set(at, _fpDn); fpRay.far = 3;
+  const f = fpRay.intersectObjects(fp.floors, false)[0], fy = f ? f.point.y : fp.p.root.position.y;
+  const across = new THREE.Vector3(Math.cos(fp.yaw), 0, -Math.sin(fp.yaw)).applyAxisAngle(_hY, (Math.random() - 0.5) * 0.8);
+  const a1 = info.a1, up = info.a3;
+  const mo = new THREE.Matrix4().makeBasis(a1, up, new THREE.Vector3().crossVectors(a1, up));
+  const mw = new THREE.Matrix4().makeBasis(across, _hY, new THREE.Vector3().crossVectors(across, _hY));
+  const Q = new THREE.Quaternion().setFromRotationMatrix(mw.multiply(mo.transpose()));
+  let lo = Infinity; for (const p of info.pts) lo = Math.min(lo, _hv.copy(p).applyQuaternion(Q).y);
+  return { X: new THREE.Vector3(at.x, fy - lo + 0.003, at.z), Q };
+}
+const SIT_REACH = 1.3;
+function seatAim() { // 准星对着空座位、够得着
+  const n = hovered, g = n && SEATS[n] && layers.get(n);
+  return g && !held && !seatTaken(n, fp.p) && new THREE.Box3().setFromObject(g).distanceToPoint(camera.position) < SIT_REACH ? n : null;
+}
+function fpUse() { // E：坐着 → 起身；对着座位 → 坐下；否则拿取 / 放下
+  const p = fp.p; if (p.tasks.length || fp.climb) return;
+  if (p.mode === 'sit') { p.tasks = riseTasks(p); return; }
+  const n = seatAim(); if (n) { p.tasks = sitTasks(p, n); fp.satT = 0; return; }
+  fpTake();
+}
 function fpTake() {
-  if (held) { held.back = true; return; }
-  const name = hovered, g = name && TAKEABLE.test(name) && layers.get(name);
+  if (held) {
+    if (held.mode !== 'hold') return;
+    held.from = poseOf(held.g, held.info.c0); held.t = 0; held.inspect = 0;
+    if (aimingAtHome(held)) { held.mode = 'back'; held.to = { X: held.info.c0.clone(), Q: new THREE.Quaternion() }; }
+    else { held.mode = 'drop'; held.to = dropPose(held); }
+    return;
+  }
+  const name = hovered, g = reachable(name);
   if (!g) return;
-  const b = new THREE.Box3().setFromObject(g);
-  held = { name, g, c: b.getCenter(new THREE.Vector3()), R: b.getSize(new THREE.Vector3()).length() / 2,
-    rel: camera.quaternion.clone().invert(), t: 0, back: false, inspect: 0 };
-  g.traverse((o) => { if (o.isMesh) o.castShadow = false; }); shadowDirty = true; // 端着时不投影（否则每帧要重画阴影图）
+  const info = gripOf(name, g);
+  held = { name, g, info, mode: 'up', t: 0, from: poseOf(g, info.c0), turn: new THREE.Quaternion(), inspect: 0 };
+  g.traverse((o) => { if (o.isMesh) o.castShadow = false; }); shadowDirty = true; // 拿着时不投影（否则每帧要重画阴影图）
   heldLayer(g, true);
-  select(name); fp.solidT = 0; // 碰撞列表里去掉它
+  select(name); paint(name); fp.solidT = 0; // 碰撞列表里去掉它
 }
 function updateHeld(dt) {
   const h = held;
-  if (!h) return;
-  h.t = THREE.MathUtils.clamp(h.t + (h.back ? -dt : dt) / 0.55, 0, 1);
-  h.inspect += ((fp && fp.inspect && !h.back ? 1 : 0) - h.inspect) * Math.min(1, dt * 8);
-  const e = h.t * h.t * (3 - 2 * h.t), k = h.inspect, d = THREE.MathUtils.clamp(h.R * 1.5, 0.3, 0.75);
-  // 端在右下方（像拿在手里）↔ 拿到眼前正中翻看；中途往上抬一点，像从钉子上摘下来
-  _hp.set(0.17 * (1 - k), -0.17 * (1 - k), -d * (1 - 0.15 * k)).applyQuaternion(camera.quaternion).add(camera.position);
-  _hp.lerpVectors(h.c, _hp, e); _hp.y += Math.sin(Math.PI * e) * 0.06;
-  _hq.copy(camera.quaternion).multiply(h.rel); _hq2.identity().slerp(_hq, e);
-  h.g.quaternion.copy(_hq2);
-  h.g.position.copy(_hp).sub(_hc.copy(h.c).applyQuaternion(_hq2));
-  if (h.back && h.t === 0) { // 挂回去了：Group 复位
-    h.g.position.set(0, 0, 0); h.g.quaternion.identity();
-    h.g.traverse((o) => { if (o.isMesh) o.castShadow = true; }); shadowDirty = true; heldLayer(h.g, false);
-    held = null; if (fp) fp.solidT = 0;
-    if (selected === h.name) select(null);
+  handK += ((h && (h.mode === 'up' || h.mode === 'hold') ? 1 - h.inspect : 0) - handK) * Math.min(1, dt * 7);
+  if (hand) {
+    hand.visible = !!fp && handK > 0.01;
+    if (hand.visible) { const hp = handPose(handK); hand.position.copy(hp.p); hand.quaternion.copy(hp.q); }
   }
+  if (!h) return;
+  h.inspect += ((fp && fp.inspect && h.mode === 'hold' ? 1 : 0) - h.inspect) * Math.min(1, dt * 8);
+  if (h.inspect < 0.02 && !(fp && fp.inspect)) h.turn.identity(); // 松开右键转回握着的样子，下次翻看从头转
+  if (h.mode === 'hold') { const P = holdPose(h); setPose(h.g, h.info.c0, P.X, P.Q); return; }
+  h.t = Math.min(1, h.t + dt / (h.mode === 'drop' ? 0.45 : 0.55));
+  const e = h.t * h.t * (3 - 2 * h.t);
+  if (h.mode === 'up') { // 从原位（墙上 / 地上）到手里，中途往上抬一点，像从钉子上摘下来
+    const P = holdPose(h);
+    _hp.lerpVectors(h.from.X, P.X, e); _hp.y += Math.sin(Math.PI * e) * 0.06;
+    setPose(h.g, h.info.c0, _hp, _hq.slerpQuaternions(h.from.Q, P.Q, e));
+    if (h.t === 1) h.mode = 'hold';
+    return;
+  }
+  if (h.mode === 'back') { _hp.lerpVectors(h.from.X, h.to.X, e); _hp.y += Math.sin(Math.PI * e) * 0.06; setPose(h.g, h.info.c0, _hp, _hq.slerpQuaternions(h.from.Q, h.to.Q, e)); }
+  else { // 丢：水平先快后慢，竖直加速落下，先往上抛一点
+    const t = h.t;
+    _hp.lerpVectors(h.from.X, h.to.X, 1 - (1 - t) * (1 - t)); _hp.y = THREE.MathUtils.lerp(h.from.X.y, h.to.X.y, t * t) + Math.sin(Math.PI * t) * 0.1;
+    setPose(h.g, h.info.c0, _hp, _hq.slerpQuaternions(h.from.Q, h.to.Q, 1 - Math.pow(1 - t, 3)));
+  }
+  if (h.t < 1) return;
+  setPose(h.g, h.info.c0, h.to.X, h.to.Q);
+  if (h.mode === 'back') { h.g.position.set(0, 0, 0); h.g.quaternion.identity(); drops.delete(h.name); } // 放回原处：Group 复位
+  else drops.set(h.name, h.to);
+  h.g.traverse((o) => { if (o.isMesh) o.castShadow = true; }); shadowDirty = true; heldLayer(h.g, false);
+  held = null; if (fp) fp.solidT = 0;
+  if (selected === h.name) select(null); else paint(h.name);
 }
 function heldTurn(dx, dy) { // 翻看：在相机坐标里绕竖轴、横轴转
-  held.rel.premultiply(_hq.setFromAxisAngle(_hY, dx * 0.008)).premultiply(_hq.setFromAxisAngle(_hX, dy * 0.008));
+  held.turn.premultiply(_hq.setFromAxisAngle(_hY, dx * 0.008)).premultiply(_hq.setFromAxisAngle(_hX, dy * 0.008));
+}
+function heldPutBack() { // 退出第一人称时手里的东西直接回原处
+  const h = held; if (!h) return;
+  h.mode = 'back'; h.t = 1; h.from = h.to = { X: h.info.c0.clone(), Q: new THREE.Quaternion() }; h.inspect = 0;
+  updateHeld(0);
 }
 function startFP(id) {
   const p = people.get(id);
   if (!p || fly || intro) return;
   select(null); spin = false; clearTimeout(idleTimer);
   if (!inside) inside = ROOMS.find((r) => r.name === 'Parlour'); // 屋里那套（近裁面、雾、UI）照用
-  p.tasks = p.mode === 'sit' ? [['anim', 'Sitting_Exit']] : [];
+  p.tasks = riseTasks(p); // 坐着的先起身（书桌椅要先拉开）
   p.player = true; p.hit.visible = false;
   p.root.traverse((o) => { if (FP.HIDE.includes(o.name)) o.visible = false; });
   fp = { p, yaw: p.root.rotation.y, pitch: -0.15, keys: new Set(), solid: [], floors: [], solidT: 0, eye: null, paused: true, climb: null, crouch: false, bob: 0 };
@@ -2759,14 +3055,14 @@ function startFP(id) {
 }
 function stopFP() {
   if (!fp) return;
-  if (held) { held.t = 0; held.back = true; updateHeld(0); } // 端着东西就直接挂回去
+  heldPutBack(); // 拿着东西就直接放回原处
   const p = fp.p; fp = null;
-  p.player = false; p.hit.visible = true; p.next = 6;
+  p.player = false; p.hit.visible = true; p.next = 6; p.roam = 8; // 过一会儿走回自己的座位
   p.root.traverse((o) => { if (FP.HIDE.includes(o.name)) o.visible = true; });
   if (document.pointerLockElement) document.exitPointerLock();
   fpHud.hidden = true; roomsBox.hidden = false; enterBtn.hidden = false;
   controls.enabled = true; lookAround(); // 相机留在他眼睛的位置，接着原地环顾
-  p.play(MOODS.stand.idle);
+  p.play(moodOf(p).idle);
 }
 document.addEventListener('pointerlockchange', () => {
   if (!fp) return;
@@ -2794,7 +3090,7 @@ canvas.addEventListener('mousedown', (e) => {
 addEventListener('keydown', (e) => {
   if (!fp) return;
   if (e.key === 'Escape' && fp.paused) { stopFP(); return; }
-  if (e.code === 'KeyE' && !e.repeat) { fpTake(); return; }
+  if (e.code === 'KeyE' && !e.repeat) { fpUse(); return; }
   fp.keys.add(e.code);
 });
 addEventListener('keyup', (e) => { if (fp) fp.keys.delete(e.code); });
@@ -2803,9 +3099,12 @@ function fpCenter() {
   return { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
 }
 const _fpV = new THREE.Vector3(), _fpD = new THREE.Vector3(), _fpO = new THREE.Vector3(), _fpU = new THREE.Vector3(0, 1, 0), _fpDn = new THREE.Vector3(0, -1, 0);
-// 梯子：靠在阁楼东沿（x 0.69–0.77，z 0.32–0.72），从东边面朝西爬；阁楼面 y 2.29，栏杆在梯子顶留了口。梯子被点开（挪到一边）就不能爬
+// 梯子：挂在阁楼东沿的滑轨上（x 0.69–0.77）。Rhino 里（k=0）停在沙发旁 z 0.32–0.72，**对不上阁楼口**；点一下滑 0.6m（k=1）到 z 0.92–1.32，正对栏杆缺口（z 0.79–1.64）才能爬（故事里也这么写）。
+// 缺口有一根拦杆 loft_gate（加载时放下），放下时上不去也下不来，要先点它抬起。从东边面朝西爬；阁楼面 y 2.29
 const LADDER = { z: 0.52, halfW: 0.24, onX: 0.98, deckX: 0.42, top: 2.29, yaw: -Math.PI / 2, speed: 0.75 };
-function ladderReady() { const d = toggles.get('loft_ladder'); return !d || d.k < 0.05; }
+function ladderReady() { const d = toggles.get('loft_ladder'); return !!d && d.k > 0.95; } // 滑到阁楼口下面了
+function ladderZ() { const d = toggles.get('loft_ladder'); return LADDER.z + 0.6 * (d ? d.k : 0); }
+function gateOpen() { const g = toggles.get('loft_gate'); return !g || g.k < 0.05; }
 function fpProbe(x, y, z) { // 脚下地面（从台阶高度往下 0.72m 内找，再低就是边沿，不让走）和头顶净空
   _fpO.set(x, y + FP.STEP, z); fpRay.set(_fpO, _fpDn); fpRay.far = FP.STEP + 0.5;
   const f = fpRay.intersectObjects(fp.floors, false)[0];
@@ -2813,9 +3112,10 @@ function fpProbe(x, y, z) { // 脚下地面（从台阶高度往下 0.72m 内找
   const c = fpRay.intersectObjects(fp.solid, false)[0];
   return { floor: f ? f.point.y : null, ceil: c ? c.point.y : y + 2.7 };
 }
-function fpPush(r, s, upper) { // 身体周围有东西就往外推（膝、胸两个高度；阁楼里胸口那圈跟着弯腰降低）
-  for (const h of [0.42 * s, upper]) for (let i = 0; i < 8; i++) {
-    const a = i / 8 * Math.PI * 2;
+function fpPush(r, s, upper) { // 身体周围有东西就往外推（小腿、膝、大腿、胸四个高度，每圈 12 个方向；阁楼里胸口那圈跟着弯腰降低）
+  // 小腿那圈 0.12m：原来只有膝、胸两圈，30cm 高的泔水桶从膝盖那圈下面钻过去、细腿凳子从射线之间漏过去，人就走进家具里（2026-10-20 用户反馈）；屋里台阶最高 9cm，不会被小腿那圈挡住
+  for (const h of [0.12 * s, 0.42 * s, 0.68 * s, upper]) for (let i = 0; i < 12; i++) {
+    const a = i / 12 * Math.PI * 2;
     _fpD.set(Math.sin(a), 0, Math.cos(a)); _fpO.set(r.position.x, r.position.y + h, r.position.z);
     fpRay.set(_fpO, _fpD); fpRay.far = FP.R;
     const hit = fpRay.intersectObjects(fp.solid, false)[0];
@@ -2832,15 +3132,15 @@ function fpTryMove(r, dx, dz, s) { // 整步走不了就试只走 x、只走 z�
   return false;
 }
 function ladderNear(r) {
-  if (!ladderReady() || Math.abs(r.position.z - LADDER.z) > 0.5) return false;
+  if (!ladderReady() || Math.abs(r.position.z - ladderZ()) > 0.5) return false;
   const x = r.position.x, y = r.position.y;
   return (y < 1 && x > 0.77 && x < 1.4) || (y > 2 && x > 0.2 && x < 0.72);
 }
 function fpLadderStart(r) { // 站在梯子前面朝它按 W → 上梯；在阁楼梯子口面朝外按 W → 下梯
-  if (!ladderReady() || Math.abs(r.position.z - LADDER.z) > LADDER.halfW) return null;
+  if (!ladderReady() || Math.abs(r.position.z - ladderZ()) > LADDER.halfW) return null;
   const x = r.position.x, y = r.position.y;
   if (y < 1 && x > 0.77 && x < 1.3 && Math.abs(angDiff(fp.yaw, LADDER.yaw)) < 0.9) return { ph: 'on' };
-  if (y > 2 && x > 0.25 && x < 0.72 && Math.abs(angDiff(fp.yaw, LADDER.yaw + Math.PI)) < 0.9) return { ph: 'down', t: 0, x0: x };
+  if (y > 2 && x > 0.25 && x < 0.72 && gateOpen() && Math.abs(angDiff(fp.yaw, LADDER.yaw + Math.PI)) < 0.9) return { ph: 'down', t: 0, x0: x };
   return null;
 }
 function fpClimb(r, dt, f) {
@@ -2848,7 +3148,7 @@ function fpClimb(r, dt, f) {
   r.rotation.y += THREE.MathUtils.clamp(angDiff(r.rotation.y, LADDER.yaw), -6 * dt, 6 * dt);
   if (C.ph === 'down') { // 从阁楼口挪到梯子上，顺手转身面朝梯子
     C.t = Math.min(1, C.t + dt / 0.7);
-    r.position.x = C.x0 + (LADDER.onX - C.x0) * C.t; r.position.z += (LADDER.z - r.position.z) * Math.min(1, dt * 8);
+    r.position.x = C.x0 + (LADDER.onX - C.x0) * C.t; r.position.z += (ladderZ() - r.position.z) * Math.min(1, dt * 8);
     fp.yaw += angDiff(fp.yaw, LADDER.yaw) * Math.min(1, dt * 5);
     r.position.y = LADDER.top - 0.25 * C.t;
     if (C.t === 1) { C.ph = 'on'; C.lock = true; } // W 还按着：松开之前不算「爬到顶」，否则立刻又迈回阁楼
@@ -2860,13 +3160,14 @@ function fpClimb(r, dt, f) {
     if (C.t === 1) fp.climb = null;
     p.play('Walk_Loop', 0.25); p.cur.timeScale = 0.8; return;
   }
-  r.position.x += (LADDER.onX - r.position.x) * Math.min(1, dt * 8); r.position.z += (LADDER.z - r.position.z) * Math.min(1, dt * 8);
+  r.position.x += (LADDER.onX - r.position.x) * Math.min(1, dt * 8); r.position.z += (ladderZ() - r.position.z) * Math.min(1, dt * 8);
   if (f <= 0) C.lock = false;
   r.position.y += (C.lock ? 0 : f) * LADDER.speed * dt;
+  r.position.y = Math.min(r.position.y, LADDER.top - 0.2); // 拦杆放着上不去时停在梯子顶，别一直往上爬
   p.play('Walk_Loop', 0.25); p.cur.timeScale = f && !C.lock ? 0.7 * f : 0; // 没有爬梯动画：走路动画按爬的方向放，停下就定住
-  const gq = fpProbe(LADDER.onX, 0.3, LADDER.z).floor, g = gq === null ? 0.16 : gq;
+  const gq = fpProbe(LADDER.onX, 0.3, ladderZ()).floor, g = gq === null ? 0.16 : gq;
   if (r.position.y <= g && f <= 0) { r.position.y = g; fp.climb = null; }
-  else if (r.position.y >= LADDER.top - 0.25 && f > 0 && !C.lock) fp.climb = { ph: 'board', t: 0, y0: r.position.y };
+  else if (r.position.y >= LADDER.top - 0.25 && f > 0 && !C.lock && gateOpen()) fp.climb = { ph: 'board', t: 0, y0: r.position.y };
 }
 function updateFP(dt) {
   const p = fp.p, r = p.root, s = r.scale.x, k = fp.keys;
@@ -2875,7 +3176,12 @@ function updateFP(dt) {
   const st = (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) - (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0);
   const run = (k.has('ShiftLeft') || k.has('ShiftRight')) && f > 0;
   let moving = false;
-  if (!p.tasks.length) { // 起身做完才能走
+  if (!p.tasks.length && p.mode === 'sit') { // 坐着：W 起身；转头有限度
+    if (f > 0) p.tasks = riseTasks(p);
+    const sy = SEATS[p.seat] ? SEATS[p.seat].yaw : r.rotation.y, d = angDiff(sy, fp.yaw);
+    if (Math.abs(d) > 1.9) fp.yaw = sy + Math.sign(d) * 1.9;
+    fp.satT = (fp.satT || 0) + dt;
+  } else if (!p.tasks.length) { // 起身做完才能走
     if (!fp.climb && f > 0) fp.climb = fpLadderStart(r);
     if (fp.climb) fpClimb(r, dt, f);
     else {
@@ -2899,6 +3205,13 @@ function updateFP(dt) {
   fp.crouch = eyeH < 1.62 * s - 0.08;
   fp.bob = moving ? fp.bob + dt * (run ? 13 : 8.5) : fp.bob * 0.9;
   _fpO.set(r.position.x + Math.sin(fp.yaw) * 0.12 * s, r.position.y + eyeH + Math.sin(fp.bob * 2) * 0.012, r.position.z + Math.cos(fp.yaw) * 0.12 * s);
+  const seated = !!p.seat || p.mode === 'sit';
+  fp.headK = (fp.headK || 0) + ((seated ? 1 : 0) - (fp.headK || 0)) * Math.min(1, dt * 6);
+  if (fp.headK > 0.001 && p.head) { // 头骨（颅底）往上 7cm、沿视线往前 10cm ≈ 眼睛
+    p.head.getWorldPosition(_fpV); _fpV.y += 0.07 * s; _fpV.x += Math.sin(fp.yaw) * 0.1 * s; _fpV.z += Math.cos(fp.yaw) * 0.1 * s;
+    _fpO.lerp(_fpV, fp.headK);
+  }
+  if (seated && p.tasks.length) fp.yaw += angDiff(fp.yaw, r.rotation.y) * Math.min(1, dt * 3); // 坐下、起身时视线跟着身体转过去
   if (!fp.eye) fp.eye = _fpO.clone(); else { fp.eye.x = _fpO.x; fp.eye.z = _fpO.z; fp.eye.y += (_fpO.y - fp.eye.y) * Math.min(1, dt * 14); }
   camera.position.copy(fp.eye);
   _fpD.set(Math.sin(fp.yaw) * Math.cos(fp.pitch), Math.sin(fp.pitch), Math.cos(fp.yaw) * Math.cos(fp.pitch));
@@ -2907,8 +3220,15 @@ function updateFP(dt) {
   const c = pointer.lastEvent = fpCenter(); hoverDirty = true; // 悬停按准星算，名字提示贴在准星右下
   tip.style.left = c.clientX + 'px'; tip.style.top = c.clientY + 'px';
   updateHeld(dt);
-  fpHint.textContent = fp.climb ? (fp.climb.ph === 'on' ? 'W up · S down' : '') : ladderNear(r) ? (fpLadderStart(r) ? (r.position.y > 2 ? 'W to climb down' : 'W to climb') : 'Face the ladder')
-    : held ? 'E to put it back · hold right button to turn it over' : hovered && TAKEABLE.test(hovered) ? 'E to take it down' : '';
+  const key = (k, zh, en) => `<b class="key">${k}</b> ${zh} · ${en}`;
+  const barred = !gateOpen() && ((fp.climb && r.position.y > LADDER.top - 0.4) || (ladderNear(r) && r.position.y > 2));
+  const hint = barred ? '先点拦杆抬起 · Lift the bar first' : fp.climb ? (fp.climb.ph === 'on' ? 'W up · S down' : '') // 梯子提示让着拿取提示（梯子边上也挂着东西）
+    : held ? (held.mode === 'hold' && aimingAtHome(held) ? key('E', '放回', 'Put back') : '') // 拿着时只在对准原位时提示；放下、翻看写在操作说明里
+    : p.mode === 'sit' ? (!p.tasks.length && fp.satT < 4 ? key('E', '起身', 'Stand') : '')
+    : seatAim() ? key('E', '坐下', 'Sit')
+    : reachable(hovered) ? key('E', '拿取', 'Take')
+    : ladderNear(r) ? (fpLadderStart(r) ? (r.position.y > 2 ? 'W to climb down' : 'W to climb') : 'Face the ladder') : '';
+  if (hint !== fpHint.dataset.h) { fpHint.dataset.h = hint; fpHint.innerHTML = hint; } // 变了才改 DOM
 }
 
 canvas.addEventListener('pointerdown', (e) => { downAt = [e.clientX, e.clientY]; });
@@ -3136,7 +3456,7 @@ renderer.setAnimationLoop(() => {
     renderer.shadowMap.needsUpdate = true; shadowSun.copy(sunD); shadowRoof = roofSig; shadowDirty = false;
   }
   renderer.render(scene, camera);
-  if (held) drawHeld();
+  if (held || (hand && hand.visible)) drawHeld();
   drawHighlight();
   updateTitleColor();
 });
